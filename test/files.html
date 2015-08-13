@@ -1,0 +1,90 @@
+<script src="tests.js"></script>
+<script src="../src/csstok.js"></script>
+<script src="../src/csspar.js"></script>
+<script src="../src/gsspar.js"></script>
+<style>
+  body>div { margin-bottom: 10px; }
+  code { font-family: monospace; background-color: #eee; padding: 2px; }
+  .pass { background-color: lime; }
+  .fail { background-color: tomato; }
+</style>
+<body>
+<script>
+  (function() {
+    var files = [
+      'baseguide.e7049fccb7.css',
+      'bootstrap.3.3.5.css',
+      'bourbon.website.css',
+      'browserhacks.4ae9b8.css',
+      'cardinal.3.2.4.css',
+      'cascade.1.6.css',
+      'concise.2.1.css',
+      'foundation.5.css',
+      'ink-legacy.3.1.9.css',
+      'ink-legacy.3.1.9.min.css',
+      'ink-flex.3.1.9.css',
+      'kube.4.0.2.css',
+      'kule.2.css',
+      'materialize.0.97.css',
+      'maxmertkit.1.0.5.css',
+      'normalize.3.0.2.css',
+      'responsive.4.1.1.css',
+      'schema.2.0.css',
+      'semantic.1.12.3.css',
+      'sitepoint.website.css',
+      'uikit.gradient.2.21.css',
+      'yaml.4.1.2.css',
+    ];
+
+//    go('browserhacks.4ae9b8.css');
+    for (var i=0; i<files.length; ++i) {
+      go(files[i]);
+    }
+
+    function go(target) {
+      var x = new XMLHttpRequest;
+      x.onreadystatechange = function () {
+        if (x.readyState == XMLHttpRequest.DONE) {
+          if (x.status == 200) {
+            console.log('Target file:', target);
+            console.log('Size:', x.responseText.length, 'bytes (' + (x.responseText.length / 1024).toFixed(1) + 'k)');
+            var tree = CSSPar(x.responseText);
+            var tokens = CSSPar.allTokens.map(function (t) {
+              return t._;
+            });
+            console.log(tree);
+            console.log(tokens);
+
+            var outputString = tree.map(function (a) {
+              return sans(nonl(JSON.stringify(a).replace(/"/g, '\'')));
+            }).join('\n\n');
+
+            outputString = nou(outputString);
+
+            document.body.innerHTML = outputString;
+            document.body.style.whiteSpace = 'pre';
+            document.body.style.fontFamily = 'monospace';
+          } else {
+            alert('fetch failed');
+          }
+        }
+      }
+      x.open('GET', 'css/' + target);
+      x.send();
+    }
+
+    function sans(s) {
+      if (!s) return s;
+      if (s instanceof Array) return '['+s.join(', ')+']';
+      return nonl(s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'));
+    }
+    function nonl(s) {
+      if (!s) return s;
+      return s.replace(/[\u000a\u000c\u000d\u2028\u2029]/g, '\u21b5');
+    }
+    function nou(s) {
+      if (!s) return s;
+      return s.replace(/[\u007f-\u0080]/, '\u00bf');
+    }
+  })();
+</script>

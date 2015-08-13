@@ -1,0 +1,83 @@
+<script src="tests.js"></script>
+<script src="../src/csstok.js"></script>
+<style>
+  body>div { margin-bottom: 10px; }
+  code { font-family: monospace; background-color: #eee; padding: 2px; white-space: pre; }
+  .pass { background-color: lime; }
+  .fail { background-color: tomato; }
+</style>
+<body>
+<script>
+  // use minified build if we're in an iframe and min.js was included in said iframe
+  if (parent.parsers && parent.parsers.css) {
+    window.CSSPar = parent.parsers.css;
+    window.GSSPar = parent.parsers.gss;
+    window.CSSTok = parent.parsers.tok;
+  }
+  (function() {
+    var fails = 0;
+
+    for (var i = 0; i < tokenTestsOk.length; ++i) {
+      var test = tokenTestsOk[i];
+
+      var expectedTokenCount = test[0];
+      var input = test[1];
+      var desc = test[2];
+
+      var div = document.createElement('div');
+      div.innerHTML =
+        '<div>'+i+': <code>'+nonl(nou(sans(input)))+'</code></div>' +
+        '<div><small>Desc: '+nonl(nou(sans(desc)))+'</small></div>';
+      document.body.appendChild(div);
+
+
+      div.style.opacity = 0.2;
+//      if (i !== 425) { VERBOSE = true; continue; }
+      div.style.opacity = 1;
+
+      div.style.backgroundColor = 'orange';
+      var next = CSSTok(input);
+      var tokens = [];
+      while (true) {
+        var t = next();
+        if (t.type === 23) break; //CSSTok.EOF) break;
+        else tokens.push(t);
+      }
+      div.style.backgroundColor = 'inherit';
+
+      var tokenString = tokens.map(function(t){
+        var s = CSSTok[t.type];
+        if (s === 'ERROR') s += '<small>['+ t.error+']</small>';
+        return s;
+      }).join(', ');
+
+      if (tokenString.indexOf('ERROR') >= 0 || tokenString.indexOf('undefined') >= 0) {
+        ++fails;
+        div.innerHTML += '<div class="fail">FAIL (expected '+expectedTokenCount+' token'+(expectedTokenCount>1?'s':'')+', got '+tokens.length+')'+(tokens.length?' ['+tokenString+']':'')+'</div>';
+      } else if (tokens.length === expectedTokenCount) {
+        div.innerHTML += '<div class="pass">PASS: ['+tokenString+']</div>';
+      } else {
+        ++fails;
+        div.innerHTML += '<div class="fail">FAIL (expected '+expectedTokenCount+' token'+(expectedTokenCount>1?'s':'')+', got '+tokens.length+')'+(tokens.length?' ['+tokenString+']':'')+'</div>';
+      }
+    }
+
+    var end = '<div>Passed '+(tokenTestsOk.length-fails)+' / '+tokenTestsOk.length+' tests (so '+fails+' failed)</div>';
+    document.body.appendChild(document.createElement('div')).innerHTML = end;
+    document.body.insertBefore(document.createElement('div'), document.body.firstChild).innerHTML = end;
+    if (!VERBOSE) console.warn('tokenizer:', end);
+
+    function sans(s) {
+      if (!s) return s;
+      return nonl(s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'));
+    }
+    function nonl(s) {
+      if (!s) return s;
+      return s.replace(/[\u000a\u000c\u000d\u2028\u2029]/g, '\u21b5');
+    }
+    function nou(s) {
+      if (!s) return s;
+      return s.replace(/[\u007f-\u0080]/, '\u00bf');
+    }
+  })();
+</script>

@@ -1,0 +1,11 @@
+console.
+<script src="../src/csstok.js"></script>
+<script>
+  (function() {
+    var input = 'o\\zo';
+
+    var tokens = CSSTok(input);
+    console.log('<-', input);
+    console.warn('->', tokens.map(function(t){ return CSSTok[t.type]; }));
+  })();
+</script>

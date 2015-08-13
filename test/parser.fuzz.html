@@ -1,0 +1,136 @@
+<script src="tests.js"></script>
+<script src="./dumb_gss_fuzzer.js"></script>
+<script src="../src/csstok.js"></script>
+<script src="../src/csspar.js"></script>
+<script src="../src/gsspar.js"></script>
+<style>
+  body>div { margin-bottom: 10px; }1
+  code { font-family: monospace; background-color: #eee; padding: 2px; }
+  .pass { background-color: lime; }
+  .fail { background-color: tomato; }
+</style>
+<body>
+Dumb CSS Fuzzer to test parser error handling. Trivial combinator more than a fuzzer.<br>
+Throws on first fail. Can be sped up considerably if needed.<br>
+<button onclick="window.PAUSE = !window.PAUSE;">toggle</button><br><br>
+
+<div id="content"></div>
+<script>
+  // use minified build if we're in an iframe and min.js was included in said iframe
+  if (parent.parsers && parent.parsers.css) {
+    window.CSSPar = parent.parsers.css;
+    window.GSSPar = parent.parsers.gss;
+    window.CSSTok = parent.parsers.tok;
+  }
+  console.log('current test can be found in `window.CURRENT` and `window.CP`');
+  VERBOSE = false;
+  var CURRENT;
+  var CP;
+  var count = 0;
+  function repeat() {
+    if (!window.PAUSE) document.querySelector('#content').innerHTML = '';
+
+    for (var i=0; i<100; ++i) fuzzExample();
+    setTimeout(repeat, 10);
+  }
+  repeat();
+
+  function fuzzExample(){
+    var s = fuzz();
+
+    one(s, 'fuzzed');
+    // help the fuzzer a bit by generating valid scaffolds on top of the fuzz
+    one('div { '+s+' }', 'just fuzz');
+    one('y == ' + s, 'gss top level rule, fuzz right');
+    one(s + ' == y', 'gss top level rule, fuzz left');
+    one('div { x: == ' + s + '}', 'gss declaration');
+    one('div { foo { '+s+' } }', 'nested rule');
+    one('div { foo { y == '+s+' } }', 'nested gss rule');
+    one('div { foo { y: == '+s+' } }', 'nested gss rule');
+    one('@' + s, 'garbled at rule');
+
+  }
+
+  function one(input, desc) {
+    if (window.PAUSE) return;
+    CURRENT = input;
+
+    var content = document.querySelector('#content');
+
+    // find col/row of EOF token
+    var last = Math.max(input.lastIndexOf('\n'), input.lastIndexOf('\r'), input.lastIndexOf('\f')) + 1;
+    var expectCol = input.length - last;
+    var expectRow = input.split(/\r\n|[\n\f\r]/g).length - 1;
+    desc = 'fuzzy('+expectCol+'/'+expectRow+'): ' + desc;
+
+    CP = '[\'' + nou(sans(input.replace(/\\/g, '\\\\').replace(/\r/g, '\\r').replace(/\n/g, '\\n').replace(/\f/g, '\\f').replace(/'/g, '\\\''))) + '\', \'\', '+expectCol+', '+expectRow+'],';
+//    console.log('%s', CP.replace(/&quot;/g, "\\'")); // wtf quotes
+
+    var div = document.createElement('div');
+    div.innerHTML +=
+      '<div>'+(++count)+' x</div>'+
+      '<div><code>' + nonl(nou(sans(input))) + '</code></div>' +
+      '<div><small>Desc: ' + nonl(nou(sans(desc))) + '</small></div>'+
+      '<div>cp: <small><code>'+CP+'</code></small></div>' +
+      '';
+    content.appendChild(div);
+
+    div.style.opacity = 0.2;
+//      if (i !== 11) continue;
+    div.style.opacity = 1;
+
+    div.style.backgroundColor = 'orange';
+    var tree = CSSPar(input);
+    var next = CSSTok(input);
+    var tokens = [];
+    while (true) {
+      var t = next();
+      tokens.push(t);
+      if (t.type === 23) { //CSSTok.EOF) {
+        break;
+      }
+    }
+    div.style.backgroundColor = 'inherit';
+
+    var tokenString = tokens.map(function (t) {
+      var s = CSSTok[t.type];
+      s += '<small>[' + nonl(nou(sans(t.value))) + ']{' + t.col + '/' + t.row + '}</small>';
+      if (s === 'ERROR') s += '<small>[' + t.error + ']</small>';
+      return s;
+    }).join(', ');
+
+    var outputString = JSON.stringify(tree);
+    if (!outputString) outputString = 'ERROR: CSSPar returned nothing';
+
+    var badOutput = outputString.indexOf('ERROR') >= 0 || outputString.indexOf('TOFIX') >= 0 || outputString.indexOf('undefined') >= 0 || outputString.indexOf('null') >= 0;
+
+    if (input.indexOf('\"') < 0 && !badOutput) {
+      outputString = outputString && outputString.replace(/"/g,'\'');
+    }
+
+    var eof = tokens[tokens.length-1];
+    if (eof.type !== 23) { //CSSTok.EOF) {
+      div.innerHTML += '<div class="fail">FAIL. Did not find EOF? Tokens (' + tokens.length + '): ' + (tokens.length ? ' [' + tokenString + ']' : '') + '</div>';
+      console.log(eof)
+      throw ':(';
+    } else if (eof.row === expectRow && eof.col === expectCol) {
+      div.innerHTML += '<div class="pass">PASS: [' + tokenString + ']</div><div style="background-color:#eee"><code>'+outputString+'</code></div>';
+    } else {
+      div.innerHTML += '<div class="fail">FAIL (expected ' + expectCol + '/' + expectRow + ', found EOF at ' + eof.col + '/' + eof.row + '. Tokens (' + tokens.length + '): ' + (tokens.length ? ' [' + tokenString + ']' : '') + '</div>';
+      throw ':(';
+    }
+  }
+
+  function sans(s) {
+    if (!s) return s;
+    return nonl(s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'));
+  }
+  function nonl(s) {
+    if (!s) return s;
+    return s.replace(/[\u000a\u000c\u000d\u2028\u2029]/g, '\u21b5');
+  }
+  function nou(s) {
+    if (!s) return s;
+    return s.replace(/[\u007f-\u0080]/, '\u00bf');
+  }
+</script>

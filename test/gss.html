@@ -1,0 +1,139 @@
+<script>
+  (function(){
+    var keys = location.href.slice(location.href.indexOf('?')).split(/[?,=]/);
+    window.VERBOSE = keys.indexOf('VERBOSE') >= 0;
+    window.HIDE_PASS = keys.indexOf('HIDE_PASS') >= 0;
+    window.N = keys.join(',').match(/N,(\d+)/) && parseFloat(keys.join(',').match(/N,(\d+)/)[1]);
+    if (!(N>0)) delete window.N;
+  })();
+</script>
+<script src="tests.js"></script>
+<script src="../src/csstok.js"></script>
+<script src="../src/csspar.js"></script>
+<script src="../src/gsspar.js"></script>
+<!--
+<script src="../src/min.js"></script>
+-->
+
+<style>
+  body>div { margin-bottom: 10px; }
+  code { font-family: monospace; background-color: #eee; padding: 2px; }
+  .pass { background-color: lime; }
+  .fail { background-color: tomato; }
+</style>
+<body>
+<script>
+  // use minified build if we're in an iframe and min.js was included in said iframe
+  if (parent.parsers && parent.parsers.css) {
+    window.CSSPar = parent.parsers.css;
+    window.GSSPar = parent.parsers.gss;
+    window.CSSTok = parent.parsers.tok;
+  }
+  (function(){
+    var keys = location.href.slice(location.href.indexOf('?')).slice(1).split(',').join(',');
+    document.body.innerHTML =
+      (HIDE_PASS ? '<a href="?'+keys.replace(/,?HIDE_PASS/g,'')+'">show passed tests</a> ':'') +
+      (!HIDE_PASS ? '<a href="?'+keys+',HIDE_PASS">hide passed tests</a> ':'') +
+      (VERBOSE ? '<a href="?'+keys.replace(/,?VERBOSE/g,'')+'">silent logs</a> ':'') +
+      (!VERBOSE ? '<a href="?'+keys+',VERBOSE">verbose logs '+(window.N>=0?'':'(slow!)')+'</a> ':'') +
+      '<form style="display: inline;" method="get" action="?"><input type="hidden" name="HIDE_PASS">focus on test id:<input name=N value="'+('N' in window ? window.N : '')+'" style="display: inline; width: 40px; text-align:center;"><input type="submit"></form>'+
+      '<form style="display: inline;" method="get" action="?foo"><input type="submit" value="clear"></form>'+
+      '<hr>';
+  })();
+  var gssTestsToUse = [].concat(gssRuleTests, gssPropertyTests, ccssOldTests);
+  (function() {
+    var fails = 0;
+    var n = 0;
+
+    for (var i = 0; i < gssTestsToUse.length; ++i) {
+      if (!gssTestsToUse[i]) console.log('next crash: forgot a comma in the test list? last test was %o', test);
+      var test = gssTestsToUse[i];
+
+      var input = test[0];
+      var expectedTree = test[1];
+      var desc = test[2];
+
+      if (typeof input === 'string') {
+        once(input, expectedTree, desc, n++, i, -1);
+      } else if (input instanceof Array) {
+        for (var j=0; j<input.length; ++j) {
+          once(input[j], expectedTree, desc, n++, i, j);
+        }
+      }
+    }
+    function once(input, expectedTree, desc, n, i, j) {
+      var div = document.createElement('div');
+      div.innerHTML =
+        '<div>'+n+' ('+i+(j>=0?'['+j+']':'')+'): <code>'+nonl(nou(sans(input)))+'</code></div>' +
+        '<div><small>Desc: '+nonl(nou(sans(desc)))+'</small></div>';
+      document.body.appendChild(div);
+
+      div.style.opacity = 0.2;
+      if (window.N >= 0 && i !== window.N) return (HIDE_PASS? div.style.display = 'none':''), (VERBOSE = true);
+      div.style.opacity = 1;
+
+      div.style.backgroundColor = 'orange';
+      var tree = CSSPar(input);
+      div.style.backgroundColor = 'inherit';
+      if (VERBOSE) console.log('\n');
+
+      var expectString = JSON.stringify(expectedTree);
+      var outputString = JSON.stringify(tree);
+      if (!outputString) outputString = 'ERROR: CSSPar returned nothing';
+
+      var badOutput = outputString.indexOf('ERROR') >= 0 || outputString.indexOf('TOFIX') >= 0 || outputString.indexOf('undefined') >= 0 || outputString.indexOf('null') >= 0;
+
+      if (input.indexOf('\"') < 0 && !badOutput) {
+        outputString = outputString && outputString.replace(/"/g,'\'');
+        expectString = expectString && expectString.replace(/"/g,'\'');
+      }
+
+      var toks = CSSPar.allTokens || [{_:'<none>'}];
+
+      if (badOutput) {
+        ++fails;
+        div.innerHTML += '<div class="fail" style="line-height: 19px;">' +
+        'FAIL! Contains error. Expected:<br>' +
+        '<code>'+expectString+'</code><br>' +
+        'But got:<br><code>'+outputString+'</code><br>' +
+        'Tokens so far: <code>['+toks.map(function(t){ return t._; })+']</code>' +
+        '</div>';
+      } else if (expectedTree === true || expectedTree === NO_THROW_TEST || outputString === expectString) {
+        div.innerHTML +=
+          '<div class="pass">' +
+          'PASS '+((expectedTree===true || expectedTree === NO_THROW_TEST )?'<b><i>(unverified)</i></b>':'')+': &nbsp;&nbsp;<span style="font-family:monospace;">'+outputString+'</span><br>' +
+//          'Tokens: <code>['+CSSPar.allTokens.map(function(t){ return t._; })+']</code>' +
+        '</div>';
+
+        if (HIDE_PASS && !VERBOSE) div.style.display = 'none';
+      } else {
+        ++fails;
+        div.innerHTML += '<div class="fail" style="line-height: 19px;">' +
+        'FAIL! Expected:<br>' +
+        '<code>'+expectString+'</code><br>' +
+        'But got:<br><code>'+outputString+'</code><br>' +
+        'Tokens so far: <code>['+toks.map(function(t){ return t._; })+']</code>' +
+        '</div>';
+      }
+    }
+
+    var end = '<div>Passed '+(gssTestsToUse.length-fails)+' / '+gssTestsToUse.length+' tests (so, '+fails+' failed)</div>';
+    document.body.appendChild(document.createElement('div')).innerHTML = end;
+    document.body.insertBefore(document.createElement('div'), document.body.firstChild).innerHTML = end;
+    if (!VERBOSE) console.warn('gss:', end);
+
+    function sans(s) {
+      if (!s) return s;
+      if (s instanceof Array) return '['+s.join(', ')+']';
+      return nonl(s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'));
+    }
+    function nonl(s) {
+      if (!s) return s;
+      return s.replace(/[\u000a\u000c\u000d\u2028\u2029]/g, '\u21b5');
+    }
+    function nou(s) {
+      if (!s) return s;
+      return s.replace(/[\u007f-\u0080]/, '\u00bf');
+    }
+  })();
+</script>

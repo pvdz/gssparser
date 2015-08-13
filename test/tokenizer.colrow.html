@@ -1,0 +1,152 @@
+<script>
+  (function(){
+    var keys = location.href.slice(location.href.indexOf('?')).split(/[?,=]/);
+    window.VERBOSE = keys.indexOf('VERBOSE') >= 0;
+    window.HIDE_PASS = keys.indexOf('HIDE_PASS') >= 0;
+    window.N = keys.join(',').match(/N,(\d+)/) && parseFloat(keys.join(',').match(/N,(\d+)/)[1]);
+    if (!(N>0)) delete window.N;
+  })();
+</script>
+<script src="tests.js"></script>
+<script src="../src/csstok.js"></script>
+<script src="../src/csspar.js"></script>
+<script src="../src/gsspar.js"></script>
+<!--
+<script src="../src/min.js"></script>
+-->
+
+<style>
+  body>div { margin-bottom: 10px; }
+  code { font-family: monospace; background-color: #eee; padding: 2px; }
+  .pass { background-color: lime; }
+  .fail { background-color: tomato; }
+</style>
+<body>
+<script>
+  // use minified build if we're in an iframe and min.js was included in said iframe
+  if (parent.parsers && parent.parsers.css) {
+    window.CSSPar = parent.parsers.css;
+    window.GSSPar = parent.parsers.gss;
+    window.CSSTok = parent.parsers.tok;
+  }
+  (function(){
+    var keys = location.href.slice(location.href.indexOf('?')).slice(1).split(',').join(',');
+    document.body.innerHTML =
+      (HIDE_PASS ? '<a href="?'+keys.replace(/,?HIDE_PASS/g,'')+'">show passed tests</a> ':'') +
+      (!HIDE_PASS ? '<a href="?'+keys+',HIDE_PASS">hide passed tests</a> ':'') +
+      (VERBOSE ? '<a href="?'+keys.replace(/,?VERBOSE/g,'')+'">silent logs</a> ':'') +
+      (!VERBOSE ? '<a href="?'+keys+',VERBOSE">verbose logs '+(window.N>=0?'':'(slow!)')+'</a> ':'') +
+      '<form style="display: inline;" method="get" action="?"><input type="hidden" name="HIDE_PASS">focus on test id:<input name=N value="'+('N' in window ? window.N : '')+'" style="display: inline; width: 40px; text-align:center;"><input type="submit"></form>'+
+      '<form style="display: inline;" method="get" action="?foo"><input type="submit" value="clear"></form>'+
+      '<hr>';
+  })();
+  (function() {
+    var n = 0;
+    var fails = 0;
+    for (var i = 0; i < colRowTests.length; ++i) {
+      var test = colRowTests[i];
+
+      var input = test[0];
+      var needle = test[1]; // string, target token to check
+      var expectCol = test[2];
+      var expectRow = test[3];
+      var desc = test[4];
+
+      step(input, desc, n++, expectCol, expectRow, needle);
+    }
+
+    var end = '<div>Passed '+(colRowTests.length-fails)+' / '+colRowTests.length+'  tests (so '+fails+' failed)</div>';
+    document.body.appendChild(document.createElement('div')).innerHTML = end;
+    document.body.insertBefore(document.createElement('div'), document.body.firstChild).innerHTML = end;
+    if (!VERBOSE) console.warn('tokenizer.colrow 1:', end);
+
+    // skip generic test cases if specific cases failed
+    if (!fails) {
+      fails = 0;
+
+      for (var i=0; i<parserTestsOk.length; ++i) {
+        if (typeof parserTestsOk[i][0] === 'string') {
+          step(parserTestsOk[i][0], parserTestsOk[i][2], n++);
+        } else {
+          for (var j=0; j<parserTestsOk[i][0].length; ++j) {
+            step(parserTestsOk[i][0][j], parserTestsOk[i][2], n++);
+          }
+        }
+      }
+
+      var end = '<div>Passed '+(parserTestsOk.length-fails)+' / '+parserTestsOk.length+'  tests (so '+fails+' failed)</div>';
+      document.body.appendChild(document.createElement('div')).innerHTML = end;
+      document.body.insertBefore(document.createElement('div'), document.body.firstChild).innerHTML = end;
+      if (!VERBOSE) console.warn('tokenizer.colrow 2:', end);
+    }
+
+    function step(input, desc, n, expectCol, expectRow, needle) {
+      if (expectCol === undefined && expectRow === undefined) {
+        needle = '';
+
+        var last = Math.max(input.lastIndexOf('\n'), input.lastIndexOf('\r'), input.lastIndexOf('\f')) + 1;
+        expectCol = input.length - last;
+        expectRow = input.split(/\r\n|[\n\f\r]/g).length - 1;
+      }
+
+      var div = document.createElement('div');
+      div.innerHTML =
+        '<div>'+n+': <code>'+nonl(nou(sans(input)))+'</code></div>' +
+        '<div><small>Desc: '+nonl(nou(sans(desc)))+'</small></div>';
+      document.body.appendChild(div);
+
+
+      div.style.opacity = 0.2;
+      if (window.N >= 0 && n !== window.N) {(HIDE_PASS? div.style.display = 'none':''), (VERBOSE = true); return; }
+      div.style.opacity = 1;
+
+      div.style.backgroundColor = 'orange';
+      var next = CSSTok(input);
+      var tokens = [];
+      while (true) {
+        var t = next();
+        tokens.push(t);
+        if (t.type === 23) break; //CSSTok.EOF) break;
+      }
+      div.style.backgroundColor = 'inherit';
+
+      var found = null;
+      var tokenString = tokens.map(function(t){
+        var s = CSSTok[t.type];
+        if (((needle && t.value === needle) || (!needle && t.type === 23)) && !found) { // CSSTok.EOF
+          s = '<u><b>'+s+'</b></u>';
+          found = t;
+        }
+        s += '<small>['+nonl(nou(sans(t.value)))+']{'+ t.col+'/'+ t.row+'}</small>';
+        if (s === 'ERROR') s += '<small>['+ t.error+']</small>';
+        return s;
+      }).join(', ');
+
+      if (!found) {
+        ++fails;
+        div.innerHTML += '<div class="fail">FAIL! Unable to find needle ['+(needle||'EOF')+']... Got ' + tokens.length + ' tokens)' + (tokens.length ? ' [' + tokenString + ']' : '') + '</div>';
+      } else if (found.row === expectRow && found.col === expectCol) {
+        div.innerHTML += '<div class="pass">PASS: ['+tokenString+']</div>';
+        if (window['HIDE_PASS'] && !window['VERBOSE']) div.style.display = 'none';
+      } else {
+        ++fails;
+        div.innerHTML += '<div class="fail">FAIL (expected '+expectCol+'/'+expectRow+', found '+ found.col+'/'+ found.row+'. Tokens ('+tokens.length+'): '+(tokens.length?' ['+tokenString+']':'')+'</div>';
+      }
+    }
+
+
+
+    function sans(s) {
+      if (typeof s !== 'string') return s;
+      return nonl(s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'));
+    }
+    function nonl(s) {
+      if (typeof s !== 'string') return s;
+      return s.replace(/[\u000a\u000c\u000d\u2028\u2029]/g, '\u21b5');
+    }
+    function nou(s) {
+      if (typeof s !== 'string') return s;
+      return s.replace(/[\u007f-\u0080]/, '\u00bf');
+    }
+  })();
+</script>
