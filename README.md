@@ -38,3 +38,12 @@ Minify
 Copy the results of building in [https://closure-compiler.appspot.com/home](Closure Compiler) and run it in Simple mode (advanced seems to screw up at the time of writing but the difference is minor anyways).
 
 Closure should turn replace the constants with their actual values and eliminate unused vars afterwards, as well as a bunch of other magic :)
+
+Tests
+----------
+
+There's an extensive set of tests available. You can run all of them through `test/iframe.html`, which includes a few static test runners in an iframe. From there you can click through.
+
+You can find those files and the others on `test/index.html` as well. There are two fuzzer pages and test pages to run a single test case.
+
+Note that these files aren't very polished. They were used for debugging and development. </excuses>
