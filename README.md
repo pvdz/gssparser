@@ -1,6 +1,12 @@
-This is a full fletched parser for CSS and GSS. GSS is a DSL constraint driven CSS flavour used by thegrid.io
+GSS Parser
+=============
 
-The minified script will return an object with three parsers. The main entry point for parsing is `window.parsers.css`. The other two are sub-parsers exposed for testing purposes.
+This is a full fledged parser for _CSS_ __and__ _GSS_. GSS is a DSL constraint driven CSS flavour used by thegrid.io
+
+Once build and minified, the script will return an object with three parsers. The main entry point for parsing is `window.parsers.css`. The other two are sub-parsers exposed for testing purposes.
+
+Usage
+-----------
 
 To run the parser simply run `window.parsers.css('input');`. This will return you a specific parse tree to be used elsewhere.
  
@@ -21,6 +27,14 @@ url: url <the url argument for url tokens: string>
 ```
 See the lexer (csstok.js) for details.
 
-To build a new version run `bin/build.js` from anywhere. This script will strip some developer artifacts from the sources and put everything in `build/build.dev.js`. Copy this in [https://closure-compiler.appspot.com/home](Closure Compiler) and run it in Simple mode (advanced seems to screw up at the time of writing but the difference is minor anyways).
+Build
+-----------
+
+To build a new version run `bin/build.js` from anywhere. This script will strip some developer artifacts from the sources and put everything in `build/build.dev.js`.
+
+Minify
+-----------
+
+Copy the results of building in [https://closure-compiler.appspot.com/home](Closure Compiler) and run it in Simple mode (advanced seems to screw up at the time of writing but the difference is minor anyways).
 
 Closure should turn replace the constants with their actual values and eliminate unused vars afterwards, as well as a bunch of other magic :)
