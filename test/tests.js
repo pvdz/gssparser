@@ -656,6 +656,8 @@ var parserSimpleSelectorTests = [
   // !important
   [wrap('color: red !important;'), wrap(["set", "color", [['get', "red"], '!', 'important']]), 'TBD important syntax'],
 
+
+
   // virtuals in preamble
 
   /*
@@ -755,7 +757,7 @@ var parserSimpleDeclarationTests = [
   ],
   [wrap('background-image: radial-gradient(ellipse farthest-corner at 470px 47px , #FFFF80 20%, rgba(204, 153, 153, 0.4) 30%, #E6E6FF 60%);'), NO_ERROR_TEST, 'radial gradient (mdn example 2)'],
   [wrap('background-image: radial-gradient(farthest-corner at 45px 45px , #FF0000 0%, #0000FF 100%);'), NO_ERROR_TEST, 'radial gradient (mdn example 2)'],
-  [wrap('background-image: background-image: radial-gradient(16px at 60px 50% , #000000 0%, #000000 14px, rgba(0, 0, 0, 0.3) 18px, rgba(0, 0, 0, 0) 19px);'), NO_ERROR_TEST, 'radial gradient (mdn example 2)'],
+  [wrap('background-image: radial-gradient(16px at 60px 50% , #000000 0%, #000000 14px, rgba(0, 0, 0, 0.3) 18px, rgba(0, 0, 0, 0) 19px);'), NO_ERROR_TEST, 'radial gradient (mdn example 2)'],
 
   // transform
   [wrap('transform: translateX(10) rotateY(1deg)'), ['rule', ['tag', 'divv'], [['set', 'transform', [['translateX', 10], ['rotateY', ['deg', 1]]]]]], 'transform uses spaces'],
@@ -2465,6 +2467,17 @@ var gracefulErrorTests = [
     ["PARSER_ERROR[A_IDENT_WITHOUT_COMBINATOR]"],
     'comment does not count as whitespace (doesnt even make sense)'
   ],
+
+  ['abc { color: background: #abc }',
+    ["rule",["tag","abc"],[["PARSER_ERROR[E_COLON_INVALID_IN_DECL_VALUE]"]]],
+    'second colon is illegal'
+  ],
+  [
+    wrap('background-image: background-image: radial-gradient(16px at 60px 50% , #000000 0%, #000000 14px, rgba(0, 0, 0, 0.3) 18px, rgba(0, 0, 0, 0) 19px);'),
+    ['rule',['tag','divv'],[['PARSER_ERROR[E_COLON_INVALID_IN_DECL_VALUE]']]],
+    'second colon is illegal'
+  ],
+
 ];
 
 var parserTestsOk = [].concat(

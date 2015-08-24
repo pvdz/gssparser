@@ -931,6 +931,10 @@ function CSSPar(input) {
           group.push(consume().value.slice(1, -1));
           break;
 
+        case TOKEN_COLON:
+          // pretty sure this is always illegal
+          return error('E_COLON_INVALID_IN_DECL_VALUE');
+
         default:
           group.push(consume().value);
       }
