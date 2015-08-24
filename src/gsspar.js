@@ -45,6 +45,7 @@ function GSSPar(_gssTokens, _input) {
   var MANDATORY = false;
   var CHECK_CURRENT_VALUE_ONLY = true;
   var CHECK_WHITE_FIRST = false;
+  var ALLOW_PERCENTAGE = true;
 
   var $input;
   var $gssTokens;
@@ -52,7 +53,7 @@ function GSSPar(_gssTokens, _input) {
   var $whitespaceAfterCurrent = false;
 
   function consume() {
-    ERROR('consumed:', $current && $current._, $current && $current.value);
+    ERROR('G>consumed:', $current && $current._, $current && $current.value);
     var was = $current;
     $whitespaceAfterCurrent = $current && $current.pbws; // since we must parse right to left, we handle this here...
     $current = $gssTokens.pop(); // gss parser goes right to left (!), undefined means eof so no checks here
@@ -85,7 +86,10 @@ function GSSPar(_gssTokens, _input) {
 
     var tree = calc_parseRule();
 
-    if ($current) return error('E_GSS_UNEXPECTED_TOKEN');
+    if ($current) {
+      WARN('GSS should be done but $current=', $current);
+      return error('E_GSS_UNEXPECTED_TOKEN');
+    }
     if (tree === null || tree === undefined) return error('E_EMPTY_TREE');
 
     if (requireIdent) {
@@ -130,7 +134,7 @@ function GSSPar(_gssTokens, _input) {
       var op = consume().value; // an op (we just verified that)
       if (op === '+' || op === '-') {
         LOG('min or plus, checking unary state');
-        if (!calc_isAtomEnd()) {
+        if (!calc_isAtomEnd(undefined, undefined, ALLOW_PERCENTAGE)) {
           LOG('consuming op as unary');
 
           // ignore +, it doesnt change anything. but
@@ -196,10 +200,6 @@ function GSSPar(_gssTokens, _input) {
       list.unshift(lhs);
       rhs = lhs;
     }
-
-    //while ($whitespaceAfterCurrent && calc_isAtomEnd()) {
-    //  group.unshift(calc_parseBetweenOps());
-    //}
 
     return list.length === 1 ? list[0] : list;
   }
@@ -1015,7 +1015,7 @@ function GSSPar(_gssTokens, _input) {
     }
     return false;
   }
-  function calc_isAtomEnd(token, sansContext) {
+  function calc_isAtomEnd(token, sansContext, allowPercentage) {
     LOG('calc_isAtomEnd', $current, '->', token);
     if (!token) token = $current;
     if (!token) return LOG('no'),false;
@@ -1025,6 +1025,8 @@ function GSSPar(_gssTokens, _input) {
       case TOKEN_STRING: // cant think of an actual use case for this, but there was a test that required it.
       case TOKEN_IDENT:
         return LOG('yes'),true;
+      case TOKEN_PERCENTAGE:
+        return LOG(allowPercentage?'yes %':'no %'),!!allowPercentage;
       case TOKEN_PUNCTUATOR:
         switch (token.value) {
           case ']':
@@ -1110,7 +1112,7 @@ function GSSPar(_gssTokens, _input) {
       var prev = $gssTokens[$gssTokens.length-1];
       LOG('did find + or -, peeking token before:', prev);
       // unary if op is not preceded by another atom except for special context modifiers
-      if (!prev || (!calc_isAtomEnd(prev) || prev.value === '^' || prev.value === '$' || prev.value === '&')) {
+      if (!prev || (!calc_isAtomEnd(prev, undefined, ALLOW_PERCENTAGE) || prev.value === '^' || prev.value === '$' || prev.value === '&')) {
         return LOG('yes unary'), true;
         // note that we dont support nested unaries so this cant be one anymore
       }
