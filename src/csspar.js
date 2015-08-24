@@ -81,7 +81,7 @@ function CSSPar(input) {
 
   function consume() {
     var was = $current;
-    ERROR('>consume', $current._, $current.value);
+    ERROR('C>consumed:', $current._, $current.value);
     if ($cached.length) {
       $current = $cached.shift();
     } else {
@@ -221,7 +221,7 @@ function CSSPar(input) {
         return parseGssRule();
       }
 
-      LOG('css decl because second token is colon and not followed by special pseudos');
+      LOG('css decl because second token is colon');
       return parseDeclaration();
     }
 
@@ -248,10 +248,6 @@ function CSSPar(input) {
 
     LOG('css rule because not gss rule');
     return parseCssRule();
-    //if (stopToken.type !== TOKEN_EOF) return error('E_UNKNOWN_DECL_STATE', CONSUME_CURRENT_TOO);
-
-    //// should skip to first next end of declaration... (basically ditch the cache)
-    //error('E_UNEXPECTED_DECL_START', CONSUME_CURRENT_TOO);
   }
   function parseGssRule() {
     LOG('parseGssRule', $current);
