@@ -795,7 +795,7 @@ function CSSPar(input) {
       return parseGssValue(prop);
     }
 
-    var value = parseDeclarationValue(null, '');
+    var value = parseDeclarationValue('');
 
     if ($current.value === ';') consume();
     else if ($current.value !== '}' && $current.type !== TOKEN_EOF) return error('E_STATE_DECL_STOP');
@@ -809,7 +809,7 @@ function CSSPar(input) {
     // assert: current cannot be error nor have a child that is an error token
     return ['set', prop, value];
   }
-  function parseDeclarationValue(commas, funcName) {
+  function parseDeclarationValue(funcName, commas) {
     LOG('parseDeclarationValue', $current);
     var group = [];
     if (!commas) commas = [];
@@ -834,7 +834,7 @@ function CSSPar(input) {
             if ($current.value === '(') {
               consume();
               // calc syntax
-              group.push(op.value, parseDeclarationValue(null, funcName));
+              group.push(op.value, parseDeclarationValue(funcName));
               if (consume().value !== ')') return error('E_PSEUDO_EXPECTED_END');
               break;
             }
@@ -892,7 +892,7 @@ function CSSPar(input) {
           if ($current.value === '(') {
             consume(); // (
             // calc syntax
-            group.push(parseDeclarationValue(null, funcName));
+            group.push(parseDeclarationValue(funcName));
             if (consume().value !== ')') return error('E_PSEUDO_EXPECTED_END');
           } else {
             var val = consume().value;
@@ -951,9 +951,9 @@ function CSSPar(input) {
     }
 
     var group = [funcName];
-    parseDeclarationValue(group, funcName);
+    parseDeclarationValue(funcName, group);
     while ($current.type === TOKEN_COMMA) {
-      parseDeclarationValue(group, funcName);
+      parseDeclarationValue(funcName, group);
     }
 
     if ($current.value !== ')') return error('E_FUNC_ARGS_COMMA_OR_END');
