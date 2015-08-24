@@ -926,7 +926,11 @@ function CSSPar(input) {
           break;
 
 
-        // fall-through
+        case TOKEN_STRING:
+          // drop the quotes
+          group.push(consume().value.slice(1, -1));
+          break;
+
         default:
           group.push(consume().value);
       }

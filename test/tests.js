@@ -766,11 +766,11 @@ var parserSimpleDeclarationTests = [
     'font family (mdn example 1)'
   ],
   [wrap('font-family: "Goudy Bookletter 1911", sans-serif;'),
-    wrap(['set', 'font-family', ['"Goudy Bookletter 1911"', ['get', 'sans-serif']]]),
+    wrap(['set', 'font-family', ['Goudy Bookletter 1911', ['get', 'sans-serif']]]),
     'font family (mdn example 1)'
   ],
   [wrap('font-family: \'Goudy Bookletter 1911\', sans-serif;'),
-    wrap(['set', 'font-family', ['\'Goudy Bookletter 1911\'', ['get', 'sans-serif']]]),
+    wrap(['set', 'font-family', ['Goudy Bookletter 1911', ['get', 'sans-serif']]]),
     'font family (mdn example 1)'
   ],
 
@@ -820,6 +820,11 @@ var parserSimpleDeclarationTests = [
   ['a {\n    background: url("a") solid, #ccc solid;\n}',
     ['rule', ['tag', 'a'], [['set', 'background', [[['url', 'a'], ['get', 'solid']], [['hex', 'ccc'], ['get', 'solid']]]]]],
     'regression, url with string, value not properly parsed'
+  ],
+
+  ['d { bakground: linear-gradient(top, right, calc(1px + 1%) of "something") }',
+    ["rule",["tag","d"],[["set","bakground",["linear-gradient",["get","top"],["get","right"],[["calc",[["px",1],"+",["%",1]]],["get","of"],"something"]]]]],
+    'make sure strings drop their quotes'
   ],
 ];
 
@@ -938,7 +943,7 @@ var gssRuleTests = [
   ['(a,b,c)[d] == e;', ["==", ["get", [",", ["tag", "a"], ["tag", "b"], ["tag", "c"]], "d"], ["get", "e"]], 'comma prop 3 args'],
   ['(a,b,c,d)[e] == f;', ["==", ["get", [",", ["tag", "a"], ["tag", "b"], ["tag", "c"], ["tag", "d"]], "e"], ["get", "f"]], 'comma prop 4 args'],
   ['([x])[width] == 1;', ["==", ["get", ["[]", "x"], "width"], 1], 'attribute with value in parens'],
-  ['(foo[x="bar"])[width] == 1;', ["==", ["get", [["tag", "foo"], ["[=]", "x", "\"bar\""]], "width"], 1], 'attribute with value in parens (deviating tree; equal sign no longer wrapped in squares)'],
+  ['(foo[x="bar"])[width] == 1;', ["==", ["get", [["tag", "foo"], ["[=]", "x", "bar"]], "width"], 1], 'attribute with value in parens (deviating tree; equal sign no longer wrapped in squares)'],
   [[
     'a[b] == d;',
     '(a)[b] == d;',
@@ -980,10 +985,10 @@ var gssRuleTests = [
   // some tests with calc/selector ambiguity
   ['(.a.b + c[z])[d] == e', ["==", ["get", [[".", "a"], [".", "b"], ["+"], ["tag", "c"], ["[]", "z"]], "d"], ["get", "e"]], 'calc selector ambiguity'],
   ['(.a.b + c[z=x])[d] == e', ["==", ["get", [[".", "a"], [".", "b"], ["+"], ["tag", "c"], ["[=]", "z", "x"]], "d"], ["get", "e"]], 'calc selector ambiguity'],
-  ['(.a.b + c[z="x"])[d] == e', ["==", ["get", [[".", "a"], [".", "b"], ["+"], ["tag", "c"], ["[=]", "z", "\"x\""]], "d"], ["get", "e"]], 'calc selector ambiguity'],
+  ['(.a.b + c[z="x"])[d] == e', ["==", ["get", [[".", "a"], [".", "b"], ["+"], ["tag", "c"], ["[=]", "z", "x"]], "d"], ["get", "e"]], 'calc selector ambiguity'],
   ['(.a.b + c[z][d])[e] == f', ["==", ["get", [[".", "a"], [".", "b"], ["+"], ["tag", "c"], ["[]", "z"], ["[]", "d"]], "e"], ["get", "f"]], 'calc selector ambiguity'],
   ['(.a.b + c[z=x][d])[e] == f', ["==", ["get", [[".", "a"], [".", "b"], ["+"], ["tag", "c"], ["[=]", "z", "x"], ["[]", "d"]], "e"], ["get", "f"]], 'calc selector ambiguity'],
-  ['(.a.b + c[z="x"][y])[d] == f', ["==", ["get", [[".", "a"], [".", "b"], ["+"], ["tag", "c"], ["[=]", "z", "\"x\""], ["[]", "y"]], "d"], ["get", "f"]], 'calc selector ambiguity'],
+  ['(.a.b + c[z="x"][y])[d] == f', ["==", ["get", [[".", "a"], [".", "b"], ["+"], ["tag", "c"], ["[=]", "z", "x"], ["[]", "y"]], "d"], ["get", "f"]], 'calc selector ambiguity'],
   ['(a + b) == z', ["==", ["+", ["get", "a"], ["get", "b"]], ["get", "z"]], 'calc selector ambiguity'],
   ['(a + b[c]) == z', ["==", ["+", ["get", "a"], ["get", ["tag", "b"], "c"]], ["get", "z"]], 'calc selector ambiguity'],
   ['a + b - c / d == foo', ['==', ['/', ['-', ['+', ['get', 'a'], ['get', 'b']], ['get', 'c']], ['get', 'd']], ['get', 'foo']], 'calc selector ambiguity'],
@@ -1596,15 +1601,15 @@ var ccssOldTests = [
   ['(&:next)[left] == 666;', ["==", ["get", [["&"], [":next"]], "left"], 666], 'legacy test'], // modified: x->left
   ['&:previous[left] == 111;', ["==", ["get", [["&"], [":previous"]], "left"], 111], 'legacy test'], // modified: x->left
   ['&:next.selected[width] == &:previous.selected[width];', ["==", ["get", [["&"], [":next"], [".", "selected"]], "width"], ["get", [["&"], [":previous"], [".", "selected"]], "width"]], 'legacy test'],
-  ['a == ([foo!="bar"])[x];', ["==", ["get", "a"], ["get", ["[!=]", "foo", "\"bar\""], "x"]], 'distilled'],
+  ['a == ([foo!="bar"])[x];', ["==", ["get", "a"], ["get", ["[!=]", "foo", "bar"], "x"]], 'distilled'],
   ['([foo~="bar"])[x] == ([foo!="bar"])[x];',
-    ["==", ["get", ["[~=]", "foo", "\"bar\""], "x"], ["get", ["[!=]", "foo", "\"bar\""], "x"]],
+    ["==", ["get", ["[~=]", "foo", "bar"], "x"], ["get", ["[!=]", "foo", "bar"], "x"]],
     'distilled'
   ],
   ['([foo~="bar"])[x] == ([foo!="bar"])[x];([foo$="bar"])[x] == ([foo*="bar"])[x];([foo ^= "bar"])[x] == ([foo  = "bar"])[x];',
-    [["==", ["get", ["[~=]", "foo", "\"bar\""], "x"], ["get", ["[!=]", "foo", "\"bar\""], "x"]],
-      ["==", ["get", ["[$=]", "foo", "\"bar\""], "x"], ["get", ["[*=]", "foo", "\"bar\""], "x"]],
-      ["==", ["get", ["[^=]", "foo", "\"bar\""], "x"], ["get", ["[=]", "foo", "\"bar\""], "x"]]]
+    [["==", ["get", ["[~=]", "foo", "bar"], "x"], ["get", ["[!=]", "foo", "bar"], "x"]],
+      ["==", ["get", ["[$=]", "foo", "bar"], "x"], ["get", ["[*=]", "foo", "bar"], "x"]],
+      ["==", ["get", ["[^=]", "foo", "bar"], "x"], ["get", ["[=]", "foo", "bar"], "x"]]]
     ,
     'legacy test'
   ],
@@ -1680,7 +1685,7 @@ var ccssOldTests = [
     'legacy test'
   ],
   ['     @if [font-family] == \'awesome-nueu\' {            z: == 100;          }          @else {            z: == 1000;          }',
-    [['@', 'if', '[', 'font-family', ']', '==', '\'awesome-nueu\'', '{', 'z', ':', '==', '100', ';', '}'], ['@', 'else', '{', 'z', ':', '==', '1000', ';', '}']],
+    [['@', 'if', '[', 'font-family', ']', '==', 'awesome-nueu', '{', 'z', ':', '==', '100', ';', '}'], ['@', 'else', '{', 'z', ':', '==', '1000', ';', '}']],
     'legacy test'
   ],
   ['            @-gss-stay #box[width], [grid-height];',

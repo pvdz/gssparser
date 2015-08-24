@@ -626,7 +626,8 @@ function GSSPar(_gssTokens, _input) {
       return error('E_ATTR_BAD_RHS');
     }
 
-    var rhs = consume().value;
+    var rhst = consume();
+    var rhs = rhst.type === TOKEN_STRING ? rhst.value.slice(1, -1) : rhst.value;
 
     if (!$current) {
       return error('E_MISSING_GROUP_START');

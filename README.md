@@ -9,7 +9,14 @@ Usage
 -----------
 
 To run the parser simply run `window.parsers.css('input');`. This will return you a specific parse tree to be used elsewhere.
- 
+
+```js
+var tree = window.parsers.css('a { b: c; }');
+
+// ->
+["rule", ["tag", "a"], [["set", "b", ['get', "c"]]]]
+```
+
 Additionally you should find all the tokens of the last parse in `window.parsers.css.allTokens`, which is an array with objects of the form:
 
 ```js
