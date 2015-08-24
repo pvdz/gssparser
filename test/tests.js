@@ -9,8 +9,8 @@
 // - input may be a string or an array of strings.
 // - an array if input strings are all expected to have the same output
 
-var NO_THROW_TEST = 1; // dont confirm output, only make sure the test did not throw (uncaught)
-var NO_ERROR_TEST = true; // dont confirm output, only make sure it contains no errors
+var NO_THROW_TEST = -999; // dont confirm output, only make sure the test did not throw (uncaught)
+var NO_ERROR_TEST = -666; // dont confirm output, only make sure it contains no errors
 var MULTI_BODY = true; // see wrap() arg
 
 var tokenTestsOk = [
