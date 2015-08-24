@@ -84,7 +84,7 @@ Throws on first fail. Can be sped up considerably if needed.<br>
     var outputString = JSON.stringify(tree);
     if (!outputString) outputString = 'ERROR: CSSPar returned nothing';
 
-    var badOutput = outputString.indexOf('ERROR') >= 0 || outputString.indexOf('TOFIX') >= 0 || outputString.indexOf('undefined') >= 0 || outputString.indexOf('null') >= 0;
+    var badOutput = outputString.indexOf('ERROR') >= 0 || outputString.indexOf('E_') >= 0 || outputString.indexOf('A_') >= 0 || outputString.indexOf('TOFIX') >= 0 || outputString.indexOf('undefined') >= 0 || outputString.indexOf('null') >= 0;
 
     if (input.indexOf('\"') < 0 && !badOutput) {
       outputString = outputString && outputString.replace(/"/g,'\'');
@@ -98,7 +98,7 @@ Throws on first fail. Can be sped up considerably if needed.<br>
       div.innerHTML +=
         '<div class="fail">FAIL incorrect EOF col/row. (expected ' + expectCol + '/' + expectRow + ', found EOF at ' + eof.col + '/' + eof.row + '. ' +
         'Tokens (' + tokens.length + '): ' + (tokens.length ? ' [' + tokenString + ']' : '') + '</div>';
-    } else if (outputString.indexOf('ERROR') >= 0) {
+    } else if (outputString.indexOf('ERROR') >= 0 || outputString.indexOf('E_') >= 0 || outputString.indexOf('A_') >= 0) {
       div.innerHTML +=
         '<div class="fail">FAIL: output has error tokens [' + tokenString + ']</div>' +
         '<div style="background-color:#eee"><code>' + outputString + '</code></div>';

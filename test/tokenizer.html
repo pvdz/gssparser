@@ -51,7 +51,7 @@
         return s;
       }).join(', ');
 
-      if (tokenString.indexOf('ERROR') >= 0 || tokenString.indexOf('undefined') >= 0) {
+      if (tokenString.indexOf('ERROR') >= 0 || tokenString.indexOf('E_') >= 0 || tokenString.indexOf('A_') >= 0 || tokenString.indexOf('undefined') >= 0) {
         ++fails;
         div.innerHTML += '<div class="fail">FAIL (expected '+expectedTokenCount+' token'+(expectedTokenCount>1?'s':'')+', got '+tokens.length+')'+(tokens.length?' ['+tokenString+']':'')+'</div>';
       } else if (tokens.length === expectedTokenCount) {

@@ -102,7 +102,7 @@ Throws on first fail. Can be sped up considerably if needed.<br>
     var outputString = JSON.stringify(tree);
     if (!outputString) outputString = 'ERROR: CSSPar returned nothing';
 
-    var badOutput = outputString.indexOf('ERROR') >= 0 || outputString.indexOf('TOFIX') >= 0 || outputString.indexOf('undefined') >= 0 || outputString.indexOf('null') >= 0;
+    var badOutput = outputString.indexOf('ERROR') >= 0 || outputString.indexOf('E_') >= 0 || outputString.indexOf('A_') >= 0 || outputString.indexOf('TOFIX') >= 0 || outputString.indexOf('undefined') >= 0 || outputString.indexOf('null') >= 0;
 
     if (input.indexOf('\"') < 0 && !badOutput) {
       outputString = outputString && outputString.replace(/"/g,'\'');
