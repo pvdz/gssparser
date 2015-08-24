@@ -910,6 +910,38 @@ function CSSPar(input) {
         case TOKEN_IDENT:
           var name = consume().value;
           if ($current.value === '(') {
+
+            if (name === 'calc') {
+              LOG('special calc() handling; parsing args as GSS');
+
+              // special case: parse calc arguments as gss: https://thegrid.slack.com/archives/gss/p1440117121000479
+              var rhpIndex = findMatchingParenIndexInCache();
+              if (rhpIndex < 0) return error('E_UNCLOSED_CALC');
+
+              // ignore `calc()`
+              var calcArgTree = undefined;
+              if (rhpIndex) {
+                var calcTokens = $cached.slice(0, rhpIndex);
+                try {
+                  var calcArgTree = GSSPar(calcTokens, input);
+                } catch (e) {
+                  ERROR('GSSPar threw error', e);
+                  error('E_CALC_ARGS_INVALID_GSS');
+                }
+
+                $cached.splice(0, rhpIndex); // drop the tokens we just parsed... do it afterwards helps error handling
+              }
+
+              if ($current.value !== '(') error('A_SHOULD_BE_PAREN'); // $current did not change
+              consume(); // (
+              if ($current.value !== ')') error('A_SHOULD_BE_PAREN'); // didnt we validate this before?
+              consume(); // )
+
+              if (calcArgTree) group.push(['calc', calcArgTree]);
+              else group.push('calc');
+              break;
+            }
+
             // may have to revise this part
             group.push(parseArguments(name, disallowGss));
           } else {
@@ -1106,6 +1138,27 @@ function CSSPar(input) {
       }
     }
     return LOG('- no'),false;
+  }
+
+  function findMatchingParenIndexInCache() {
+    LOG('findMatchingParenIndexInCache');
+    // we will (dumbly) scan the cache for the first closing paren on the same level as the start
+
+    var cache = $cached;
+    var pairs = 0;
+    for (var i=0; i<cache.length; ++i) {
+      switch (cache[i].value) {
+        case '(':
+          ++pairs;
+          break;
+        case ')':
+          if (!pairs) return LOG('- found at ', i), i;
+          --pairs;
+          break;
+      }
+    }
+    // -1 means invalid. the cache starts after $current pos so `0` can be a perfectly valid response.
+    return LOG('- no'), -1;
   }
 
   function error(msg, consumeCurrent) {

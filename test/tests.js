@@ -9,8 +9,8 @@
 // - input may be a string or an array of strings.
 // - an array if input strings are all expected to have the same output
 
-var NO_THROW_TEST = -999; // dont confirm output, only make sure the test did not throw (uncaught)
-var NO_ERROR_TEST = -666; // dont confirm output, only make sure it contains no errors
+var NO_THROW_TEST = 'TEST SHOULD SIMPLY NOT THROW'; // dont confirm output, only make sure the test did not throw (uncaught)
+var NO_ERROR_TEST = 'SHOULD NOT REPORT AN ERROR'; // dont confirm output, only make sure it contains no errors
 var MULTI_BODY = true; // see wrap() arg
 
 var tokenTestsOk = [
@@ -779,27 +779,27 @@ var parserSimpleDeclarationTests = [
   // calc
   [wrap('foo: calc();'), wrap(['set', 'foo', 'calc']), 'no args'],
   [wrap('foo: calc(10)'), wrap(['set', 'foo', ['calc', 10]]), 'one arg'],
-  [wrap('foo: calc(10 + 20)'), wrap(['set', 'foo', ['calc', [10, '+', 20]]]), 'addition (args in a group because they are spaced as a single arg)'],
-  [wrap('foo: calc(10 - 20)'), wrap(['set', 'foo', ['calc', [10, '-', 20]]]), 'subtraction (args in a group because they are spaced as a single arg)'],
-  [wrap('foo: calc(10 * 20)'), wrap(['set', 'foo', ['calc', [10, '*', 20]]]), 'multiplication (args in a group because they are spaced as a single arg)'],
-  [wrap('foo: calc(10 / 20)'), wrap(['set', 'foo', ['calc', [10, '/', 20]]]), 'division (args in a group because they are spaced as a single arg)'],
-  [wrap('foo: calc(10 + -20)'), wrap(['set', 'foo', ['calc', [10, '+', -20]]]), 'addition with negative'],
-  [wrap('foo: calc(-10 + 20)'), wrap(['set', 'foo', ['calc', [-10, '+', 20]]]), 'addition with negative'],
-  [wrap('foo: calc(-10 + -20)'), wrap(['set', 'foo', ['calc', [-10, '+', -20]]]), 'addition with two negatives'],
-  [wrap('foo: calc(10 + +20)'), wrap(['set', 'foo', ['calc', [10, '+', 20]]]), 'addition with prefix'],
-  [wrap('foo: calc(10 - -20)'), wrap(['set', 'foo', ['calc', [10, '-', -20]]]), 'subtraction with negative'],
-  [wrap('foo: calc(-10 - 20)'), wrap(['set', 'foo', ['calc', [-10, '-', 20]]]), 'subtraction with negative'],
-  [wrap('foo: calc(-10 - -20)'), wrap(['set', 'foo', ['calc', [-10, '-', -20]]]), 'subtraction with two negatives'],
-  [wrap('foo: calc(10 - +20)'), wrap(['set', 'foo', ['calc', [10, '-', 20]]]), 'subtraction with prefix'],
-  [wrap('foo: calc(10*20)'), wrap(['set', 'foo', ['calc', [10, '*', 20]]]), 'multiplication, unspaced'],
-  [wrap('foo: calc(10/20)'), wrap(['set', 'foo', ['calc', [10, '/', 20]]]), 'division, unspaced'],
-  [wrap('foo: calc(10px - +20vw)'), wrap(['set', 'foo', ['calc', [['px', 10], '-', ['vw', 20]]]]), 'subtraction with prefix'],
+  [wrap('foo: calc(10 + 20)'), wrap(['set', 'foo', ['calc', ['+', 10, 20]]]), 'addition (args in a group because they are spaced as a single arg)'],
+  [wrap('foo: calc(10 - 20)'), wrap(['set', 'foo', ['calc', ['-', 10, 20]]]), 'subtraction (args in a group because they are spaced as a single arg)'],
+  [wrap('foo: calc(10 * 20)'), wrap(['set', 'foo', ['calc', ['*', 10, 20]]]), 'multiplication (args in a group because they are spaced as a single arg)'],
+  [wrap('foo: calc(10 / 20)'), wrap(['set', 'foo', ['calc', ['/', 10, 20]]]), 'division (args in a group because they are spaced as a single arg)'],
+  [wrap('foo: calc(10 + -20)'), wrap(['set', 'foo', ['calc', ['+', 10, -20]]]), 'addition with negative'],
+  [wrap('foo: calc(-10 + 20)'), wrap(['set', 'foo', ['calc', ['+', -10, 20]]]), 'addition with negative'],
+  [wrap('foo: calc(-10 + -20)'), wrap(['set', 'foo', ['calc', ['+', -10, -20]]]), 'addition with two negatives'],
+  [wrap('foo: calc(10 + +20)'), wrap(['set', 'foo', ['calc', ['+', 10, 20]]]), 'addition with prefix'],
+  [wrap('foo: calc(10 - -20)'), wrap(['set', 'foo', ['calc', ['-', 10, -20]]]), 'subtraction with negative'],
+  [wrap('foo: calc(-10 - 20)'), wrap(['set', 'foo', ['calc', ['-', -10, 20]]]), 'subtraction with negative'],
+  [wrap('foo: calc(-10 - -20)'), wrap(['set', 'foo', ['calc', ['-', -10, -20]]]), 'subtraction with two negatives'],
+  [wrap('foo: calc(10 - +20)'), wrap(['set', 'foo', ['calc', ['-', 10, 20]]]), 'subtraction with prefix'],
+  [wrap('foo: calc(10*20)'), wrap(['set', 'foo', ['calc', ['*', 10, 20]]]), 'multiplication, unspaced'],
+  [wrap('foo: calc(10/20)'), wrap(['set', 'foo', ['calc', ['/', 10, 20]]]), 'division, unspaced'],
+  [wrap('foo: calc(10px - +20vw)'), wrap(['set', 'foo', ['calc', ['-', ['px', 10], ['vw', 20]]]]), 'subtraction with prefix'],
   [wrap('width: calc(100%/3 - 2*1em - 2*1px);'), NO_ERROR_TEST, 'spec example 14'], // http://dev.w3.org/csswg/css-values-3/#calc-notation
   [wrap('margin: calc(1rem - 2px) calc(1rem - 1px);'), NO_ERROR_TEST, 'spec example 15'], // http://dev.w3.org/csswg/css-values-3/#calc-notation
   [wrap('font-size: calc(100vw / 40);'), NO_ERROR_TEST, 'spec example 16'], // http://dev.w3.org/csswg/css-values-3/#calc-notation
   [wrap('background-position: calc(50% + 20px) calc(50% + 20px), 50% 50%;'), NO_ERROR_TEST, 'spec example 17'], // http://dev.w3.org/csswg/css-values-3/#calc-notation
   [wrap('background-image: linear-gradient(to right, silver, white 50px, white calc(100% - 50px), silver);'), NO_ERROR_TEST, 'spec example 18'], // http://dev.w3.org/csswg/css-values-3/#calc-notation
-  [wrap('width: calc(5px - 10px);'), wrap(['set', 'width', ['calc', [['px', 5], '-', ['px', 10]]]]), 'should be equal to 0px, range test which we dont enforce anyways'],
+  [wrap('width: calc(5px - 10px);'), wrap(['set', 'width', ['calc', ['-', ['px', 5], ['px', 10]]]]), 'should be equal to 0px, range test which we dont enforce anyways'],
   [wrap('width: -moz-calc((1));'), wrap(['set', 'width', ['-moz-calc', 1]])],
   [wrap('width: -moz-calc((1 * 2));'), wrap(['set', 'width', ['-moz-calc', [1, '*', 2]]])],
   [wrap('width: -moz-calc(3 / (2));'), wrap(['set', 'width', ['-moz-calc', [3, '/', 2]]])],
@@ -825,7 +825,7 @@ var parserSimpleDeclarationTests = [
   ],
 
   ['d { bakground: linear-gradient(top, right, calc(1px + 1%) of "something") }',
-    ["rule",["tag","d"],[["set","bakground",["linear-gradient",["get","top"],["get","right"],[["calc",[["px",1],"+",["%",1]]],["get","of"],"something"]]]]],
+    ["rule",["tag","d"],[["set","bakground",["linear-gradient",["get","top"],["get","right"],[["calc",["+",["px",1],["%",1]]],["get","of"],"something"]]]]],
     'make sure strings drop their quotes'
   ],
 ];
@@ -1549,6 +1549,38 @@ var gssPropertyTests = [
     //['@', 'foo', ['||', ['>=', ['get', 'width'], ['px', 100]], ['<=', ['get', 'width'], ['px', 200]]]],
     ['@', 'foo', '(', 'min-width', ':', '100', 'px', ')', 'or', '(', 'max-width', ':', '200', 'px', ')'],
     'as requested'
+  ],
+
+  // https://thegrid.slack.com/archives/gss/p1440116810000475
+  // https://thegrid.slack.com/archives/gss/p1440116833000476
+  ['a { abc: calc(a / 1); }',
+    //['rule',['tag','a'],[['set','abc',['calc',[['get','a'],'/',1]]]]],
+    ['rule',['tag','a'],[['set','abc',["calc", ["/", ["get", "a"], 1]]]]],
+    'calc is gss'
+  ],
+  ['x:== calc(15n+23)',
+    ['==',['get',['&'],'x'],['calc',['+',['n',15],23]]],
+    'check anb in gss calc context'
+  ],
+  ['x:== calc(x/y*z)',
+    ['==',['get',['&'],'x'],['calc',['*',['/',['get','x'],['get','y']],['get','z']]]],
+    'check anb in gss calc context'
+  ],
+  ['x: calc(x/y*z)',
+    ['set','x',['calc',['*',['/',['get','x'],['get','y']],['get','z']]]],
+    'check anb in css calc context'
+  ],
+  ['x:== 100% - 50px',
+    ['==',['get',['&'],'x'],['-',['%',100],['px',50]]],
+    'regression: gss would not parse % as a value'
+  ],
+  ['x:== 100% + 50px',
+    ['==',['get',['&'],'x'],['+',['%',100],['px',50]]],
+    'regression: gss would not parse % as a value'
+  ],
+  ['x:== 100%-50px',
+    ['==',['get',['&'],'x'],['-',['%',100],['px',50]]],
+    'regression: gss would not parse % as a value'
   ],
 
   // todo: i cant find a reference to this request and i dont know what it would mean. my bad?
