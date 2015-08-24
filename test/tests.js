@@ -1098,7 +1098,7 @@ var gssRuleTests = [
   // star amibguity
   ['*[x] == y;',
     ['==', ['get', ['tag', '*'], 'x'], ['get', 'y']],
-    'gss toplevel star as tag'
+    'theoretical: gss toplevel star as tag, but made illegal to support the IE star hack'
   ],
   ['(*)[x] == y',
     ['==', ['get', ['tag', '*'], 'x'], ['get', 'y']],
@@ -1272,11 +1272,11 @@ var gssRuleTests = [
     'double nesting with gss rule inside'
   ],
   [[
-    'a { b { c:foo() == d } }',
-    'a { b { c:foo() == d; }; }', // for peg
+    'a { b { c:foo()[x] == d } }',
+    'a { b { c:foo()[x] == d; }; }', // for peg
   ],
-    //["rule",["tag","a"],[["rule",["tag","b"],[["set","c","foo() == d"]]]]],
-    ['rule', ['tag', 'a'], [['rule', ['tag', 'b'], [['set', 'c', ['foo', '==', ['get', 'd']]]]]]], // TOFIX: shouldnt foo become `['foo']`?
+    //["rule",["tag","a"],[["rule",["tag","b"],[["set","c","foo() == d"]]]]], // makes no sense
+    ['rule',['tag','a'],[['rule',['tag','b'],[['==',['get',[['tag','c'],[':foo']],'x'],['get','d']]]]]], // TOFIX: shouldnt foo become `['foo']`?
     'double nesting with gss rule inside and a red herring colon but still a rule, not declaration'
   ],
   [[
@@ -1518,6 +1518,9 @@ var gssRuleTests = [
     ['==',['get',[['tag','x'],[':next'],['.','selected']],'width'],['get',[['&'],[':previous'],['.','selected']],'width']],
     'legacy; modified ambiguation case'
   ],
+
+  // css declarations in top level
+  ['color: red;', ['set','color',['get','red']], 'css decl in top level without selector'],
 ];
 var gssPropertyTests = [
   ['div { foo: == bar; }',
@@ -2357,7 +2360,8 @@ var gracefulErrorTests = [
 
   ['(a,b) c == d', ['GSS_ERROR[E_GROUP_MISSING_OPEN]'], 'comma vars wrapped in parens with one unit is invalid?'],
 
-  ['foo:bar == d', ['GSS_ERROR[E_GSS_UNEXPECTED_TOKEN]'], 'error, foo is always a tag. vars cannot have selectors applied'],
+  ['foo:bar == d', ['GSS_ERROR[E_GSS_UNEXPECTED_TOKEN]'], 'error, `foo:bar` is always a selector, not a value. vars cannot have selectors applied'],
+  ['*foo:bar == d', ['PARSER_ERROR[E_STAR_HACK_NO_GSS]'], 'star hack should never have gss artifacts (because so legacy)'],
 
   // tofix: add invalid virtual cases with single quotes
 
@@ -2457,7 +2461,7 @@ var gracefulErrorTests = [
     'legacy test'
   ],
 
-  ['div { *\\x:=', ['rule', ['tag', 'div'], [['PARSER_ERROR[E_EXPECTED_GSS_VALUE_NOT_EOF]']]], 'missing gss decl value rhs'],
+  ['div { *\\x:=', ['rule', ['tag', 'div'], [['PARSER_ERROR[E_UNEXPECTED_GSS_TOKEN_IN_CSS_VALUE]']]], 'missing gss decl value rhs'],
 
   ['"foo" == 10;', [], 'virtuals must have an accessor'],
   ['x + "foo" == 10;', [], 'virtuals must have an accessor'],
@@ -2478,6 +2482,13 @@ var gracefulErrorTests = [
     'second colon is illegal'
   ],
 
+  [[
+    'a { b { c:foo() == d } }',
+    'a { b { c:foo() == d; }; }', // for peg
+  ],
+    ['rule',['tag','a'],[['rule',['tag','b'],[['GSS_ERROR[E_GSS_UNEXPECTED_TOKEN]']]]]], // foo() is not a value...
+    'double nesting with gss rule inside and a red herring colon but still a rule, not declaration'
+  ],
 ];
 
 var parserTestsOk = [].concat(

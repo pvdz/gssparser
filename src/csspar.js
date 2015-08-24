@@ -61,9 +61,10 @@ function CSSPar(input) {
   var CONSUMED_PREFIX = true;
   var NO_PREFIX = false;
   var FOR_PSEUDO = true;
-  var DECL_INSIDE_BODY = false;
-  var TOP_LEVEL_DECL = true;
+  var INSIDE_BODY = false;
+  var TOP_LEVEL = true;
   var CONSUME_CURRENT_TOO = true;
+  var DISALLOW_GSS = true;
 
   var $atSkip = ['v', 'h', 'if'];
 
@@ -183,10 +184,10 @@ function CSSPar(input) {
       return error('A_CACHE_SHOULD_BE_EMPTY', CONSUME_CURRENT_TOO);
     }
 
-    return parseDeclOrCssOrGssRule(TOP_LEVEL_DECL);
+    return parseDeclOrCssOrGssRule(TOP_LEVEL);
   }
-  function parseDeclOrCssOrGssRule(declMode) {
-    LOG('parseDeclOrCssOrGssRule', declMode, $cached.length);
+  function parseDeclOrCssOrGssRule(parsingTopLevel) {
+    LOG('parseDeclOrCssOrGssRule', parsingTopLevel, $cached.length);
     // this function can be called at the start of a top
     // level rule or at the start of a nested rule
 
@@ -200,12 +201,6 @@ function CSSPar(input) {
       return error('A_STOP_SHOULD_BE_IN_CACHE_LIST');
     }
 
-    // css rule is quite simple and irrefutable
-    if (stopToken.value === '{') {
-      LOG('css rule, because {');
-      return parseCssRule();
-    }
-
     if (stopToken.value === '{') {
       LOG('css rule because stop is {');
       return parseCssRule();
@@ -213,19 +208,29 @@ function CSSPar(input) {
 
     // note: first token is `$current`, so first token in cache is "next token"
     if ($current.type === TOKEN_IDENT && $cached.length && $cached[0].type === TOKEN_COLON) {
-      if (declMode === TOP_LEVEL_DECL) {
-        // only parse as gss if token after colon is a constraint op...
-        if ($cached[1] && isConstraintOp($cached[1].value)) {
-          LOG('gss decl because second token is colon and we are at top rule level');
-          return parseGssTopDecl();
-        }
-      }
-      if (declMode === DECL_INSIDE_BODY) {
-        LOG('css decl because second token is colon and we are inside a body');
-        return parseDeclaration();
+      // parse as gss if token after colon is a constraint op...
+      if ($cached[1] && isConstraintOp($cached[1].value)) {
+        LOG('gss decl because second token is colon followed by constraint op');
+        return parseGssDecl();
       }
 
-      if (declMode !== TOP_LEVEL_DECL) return error('E_MISSING_DECL_MODE');
+      // now we have to disambiguate because gss may have pseudos (`x:previous[left] == 111;` is not a declaration!)
+
+      if (doesCacheHaveToplevelConstraintOp()) {
+        LOG('found constraint op in toplevel so parsing as gss');
+        return parseGssRule();
+      }
+
+      LOG('css decl because second token is colon and not followed by special pseudos');
+      return parseDeclaration();
+    }
+
+    if ($current.value === '*' && $cached[0] && $cached[0].type === TOKEN_IDENT && $cached[1] && $cached[1].type === TOKEN_COLON) {
+      // *zoom is an old IE hack
+      consume(); // *
+      if (doesCacheHaveToplevelConstraintOp()) error('E_STAR_HACK_NO_GSS');
+      // always a declaration, not a rule
+      return ['***', parseDeclaration()];
     }
 
     if (stopToken === $current) {
@@ -274,8 +279,8 @@ function CSSPar(input) {
     else initCurrent();
     return tree;
   }
-  function parseGssTopDecl() {
-    LOG('parseGssTopDecl', $current);
+  function parseGssDecl() {
+    LOG('parseGssDecl', $current);
     if (!$cached[0]) return error('A_CACHE_MISSING_COLON_SHOULD_BE_VALIDATED');
     if ($cached[0].type !== TOKEN_COLON) return error('A_CACHE_MISSING_COLON_SHOULD_BE_VALIDATED');
     $cached.shift(); // drop the colon
@@ -746,12 +751,12 @@ function CSSPar(input) {
   function parseDeclarationOrNestedRuleUnsafe() {
     LOG('parseDeclarationOrNestedRuleUnsafe', $current);
 
-    if ($current.type === TOKEN_IDENT) return parseDeclOrCssOrGssRule(DECL_INSIDE_BODY);
+    if ($current.type === TOKEN_IDENT) return parseDeclOrCssOrGssRule(INSIDE_BODY);
 
     // strings are virtuals (gss custom), so a nested (gss) rule
     // dot (class) and hash indicate nested rule
     if ($current.type === TOKEN_STRING || $current.type === TOKEN_DOT || $current.type === TOKEN_HASH) {
-      return parseDeclOrCssOrGssRule(DECL_INSIDE_BODY);
+      return parseDeclOrCssOrGssRule(INSIDE_BODY);
     }
 
     switch ($current.value) {
@@ -774,7 +779,7 @@ function CSSPar(input) {
       case '&':
       case '$':
       case '^':
-        return parseDeclOrCssOrGssRule(DECL_INSIDE_BODY);
+        return parseDeclOrCssOrGssRule(INSIDE_BODY);
     }
 
     return error('E_DECL_UNKNOWN_NON_IDENT_START', CONSUME_CURRENT_TOO);
@@ -790,12 +795,7 @@ function CSSPar(input) {
     consume(); // :
     LOG('SET', prop, ':', $current.value);
 
-    // gss values dont return `set`s
-    if (isConstraintOp($current.value)) {
-      return parseGssValue(prop);
-    }
-
-    var value = parseDeclarationValue('');
+    var value = parseDeclarationValue(DISALLOW_GSS);
 
     if ($current.value === ';') consume();
     else if ($current.value !== '}' && $current.type !== TOKEN_EOF) return error('E_STATE_DECL_STOP');
@@ -809,11 +809,16 @@ function CSSPar(input) {
     // assert: current cannot be error nor have a child that is an error token
     return ['set', prop, value];
   }
-  function parseDeclarationValue(funcName, commas) {
+  function parseDeclarationValue(disallowGss, commas) {
     LOG('parseDeclarationValue', $current);
+
+    if (disallowGss && isConstraintOp($current.value)) return error('E_UNEXPECTED_GSS_TOKEN_IN_CSS_VALUE');
+
     var group = [];
     if (!commas) commas = [];
     while ($current.value !== ';' && $current.value !== '}' && $current.value !== ')' && $current.type !== TOKEN_EOF) {
+
+
       var invertFlag = 1;
       var now = $current;
       switch ($current.type) {
@@ -834,7 +839,7 @@ function CSSPar(input) {
             if ($current.value === '(') {
               consume();
               // calc syntax
-              group.push(op.value, parseDeclarationValue(funcName));
+              group.push(op.value, parseDeclarationValue(disallowGss));
               if (consume().value !== ')') return error('E_PSEUDO_EXPECTED_END');
               break;
             }
@@ -892,7 +897,7 @@ function CSSPar(input) {
           if ($current.value === '(') {
             consume(); // (
             // calc syntax
-            group.push(parseDeclarationValue(funcName));
+            group.push(parseDeclarationValue(disallowGss));
             if (consume().value !== ')') return error('E_PSEUDO_EXPECTED_END');
           } else {
             var val = consume().value;
@@ -910,7 +915,7 @@ function CSSPar(input) {
           var name = consume().value;
           if ($current.value === '(') {
             // may have to revise this part
-            group.push(parseArguments(name));
+            group.push(parseArguments(name, disallowGss));
           } else {
             group.push(['get', name]);
             // dont get, this is a css value
@@ -943,7 +948,7 @@ function CSSPar(input) {
 
     return commas.length === 1 ? commas[0] : commas;
   }
-  function parseArguments(funcName) {
+  function parseArguments(funcName, disallowGss) {
     consume(); // (
     if ($current.value === ')') {
       consume(); // )
@@ -951,9 +956,9 @@ function CSSPar(input) {
     }
 
     var group = [funcName];
-    parseDeclarationValue(funcName, group);
+    parseDeclarationValue(disallowGss, group);
     while ($current.type === TOKEN_COMMA) {
-      parseDeclarationValue(funcName, group);
+      parseDeclarationValue(disallowGss, group);
     }
 
     if ($current.value !== ')') return error('E_FUNC_ARGS_COMMA_OR_END');
@@ -1075,6 +1080,36 @@ function CSSPar(input) {
         return LOG('yes'),true;
     }
     return LOG('no'),false;
+  }
+
+  function doesCacheHaveToplevelConstraintOp() {
+    LOG('doesCacheHaveToplevelConstraintOp');
+    // we will (dumbly) scan the cache for a _top level_ constraint op. so we skip any pairs.
+    // if we find a constraint op, we know to parse gss. else we assume css.
+
+    var cache = $cached;
+    var pairs = 0;
+    for (var i=0; i<cache.length; ++i) {
+      switch (cache[i].value) {
+        case '{':
+        case '(':
+        case '[':
+          ++pairs;
+          break;
+        case '}':
+        case ')':
+        case ']':
+          --pairs;
+          break;
+        default:
+          // only if pairs is 0 we are toplevel... we dont care
+          // about constraint ops inside calls or whatever
+          if (!pairs && isConstraintOp(cache[i].value)) {
+            return LOG('- yes'),true;
+          }
+      }
+    }
+    return LOG('- no'),false;
   }
 
   function error(msg, consumeCurrent) {
