@@ -649,13 +649,12 @@ var parserSimpleSelectorTests = [
     'a, (b, c, e) {}',
     '(a, b), (c, e) {}',
   ],
-    ["rule", [",", ["tag", "a"], ["tag", "b"], ["tag", "c"], ["tag", "e"]], []],
+    ['rule', [',', ['tag', 'a'], ['tag', 'b'], ['tag', 'c'], ['tag', 'e']], []],
     'comma lists should be flattened'
   ],
 
   // !important
-  [wrap('color: red !important;'), wrap(["set", "color", [['get', "red"], '!', 'important']]), 'TBD important syntax'],
-
+  [wrap('color: red !important;'), wrap(['set', 'color', [['get', 'red'], '!', 'important']]), 'TBD important syntax'],
 
 
   // virtuals in preamble
@@ -825,7 +824,7 @@ var parserSimpleDeclarationTests = [
   ],
 
   ['d { bakground: linear-gradient(top, right, calc(1px + 1%) of "something") }',
-    ["rule",["tag","d"],[["set","bakground",["linear-gradient",["get","top"],["get","right"],[["calc",["+",["px",1],["%",1]]],["get","of"],"something"]]]]],
+    ['rule', ['tag', 'd'], [['set', 'bakground', ['linear-gradient', ['get', 'top'], ['get', 'right'], [['calc', ['+', ['px', 1], ['%', 1]]], ['get', 'of'], 'something']]]]],
     'make sure strings drop their quotes'
   ],
 ];
@@ -933,25 +932,25 @@ var gssRuleTests = [
   ['[a][b] == c;', ['==', ['get', ['[]', 'a'], 'b'], ['get', 'c']], 'double prop'],
 
   // css selectors must end with accessor (`[xxx]`)
-  ['y[z] == a', ["==", ["get", ["tag", "y"], "z"], ["get", "a"]], 'disambiguation; plus must be calc'],
+  ['y[z] == a', ['==', ['get', ['tag', 'y'], 'z'], ['get', 'a']], 'disambiguation; plus must be calc'],
   ['x + y[z] == a', ['==', ['+', ['get', 'x'], ['get', ['tag', 'y'], 'z']], ['get', 'a']], 'disambiguation; plus must be calc'],
   ['(x + y)[z] == a', ['==', ['get', [['tag', 'x'], ['+'], ['tag', 'y']], 'z'], ['get', 'a']], 'disambiguation; plus must be combinator'],
-  ['(a b)[c] == d;', ["==", ["get", [["tag", "a"], [" "], ["tag", "b"]], "c"], ["get", "d"]], 'use parens for spacing'],
-  ['(.a .b)[c] == d;', ["==", ["get", [[".", "a"], [" "], [".", "b"]], "c"], ["get", "d"]], 'dot notation'],
-  ['(a .b #c)[d] == e;', ["==", ["get", [["tag", "a"], [" "], [".", "b"], [" "], ["#", "c"]], "d"], ["get", "e"]], 'dot and hash'],
-  ['(.a.b)[c] == d;', ["==", ["get", [[".", "a"], [".", "b"]], "c"], ["get", "d"]], 'double class'],
-  ['(a,b)[c] == d;', ["==", ["get", [",", ["tag", "a"], ["tag", "b"]], "c"], ["get", "d"]], 'comma prop'],
-  ['(a b,c)[d] == e;', ["==", ["get", [",", [["tag", "a"], [" "], ["tag", "b"]], ["tag", "c"]], "d"], ["get", "e"]], 'comma prop with combinator'],
-  ['(a,b,c)[d] == e;', ["==", ["get", [",", ["tag", "a"], ["tag", "b"], ["tag", "c"]], "d"], ["get", "e"]], 'comma prop 3 args'],
-  ['(a,b,c,d)[e] == f;', ["==", ["get", [",", ["tag", "a"], ["tag", "b"], ["tag", "c"], ["tag", "d"]], "e"], ["get", "f"]], 'comma prop 4 args'],
-  ['([x])[width] == 1;', ["==", ["get", ["[]", "x"], "width"], 1], 'attribute with value in parens'],
-  ['(foo[x="bar"])[width] == 1;', ["==", ["get", [["tag", "foo"], ["[=]", "x", "bar"]], "width"], 1], 'attribute with value in parens (deviating tree; equal sign no longer wrapped in squares)'],
+  ['(a b)[c] == d;', ['==', ['get', [['tag', 'a'], [' '], ['tag', 'b']], 'c'], ['get', 'd']], 'use parens for spacing'],
+  ['(.a .b)[c] == d;', ['==', ['get', [['.', 'a'], [' '], ['.', 'b']], 'c'], ['get', 'd']], 'dot notation'],
+  ['(a .b #c)[d] == e;', ['==', ['get', [['tag', 'a'], [' '], ['.', 'b'], [' '], ['#', 'c']], 'd'], ['get', 'e']], 'dot and hash'],
+  ['(.a.b)[c] == d;', ['==', ['get', [['.', 'a'], ['.', 'b']], 'c'], ['get', 'd']], 'double class'],
+  ['(a,b)[c] == d;', ['==', ['get', [',', ['tag', 'a'], ['tag', 'b']], 'c'], ['get', 'd']], 'comma prop'],
+  ['(a b,c)[d] == e;', ['==', ['get', [',', [['tag', 'a'], [' '], ['tag', 'b']], ['tag', 'c']], 'd'], ['get', 'e']], 'comma prop with combinator'],
+  ['(a,b,c)[d] == e;', ['==', ['get', [',', ['tag', 'a'], ['tag', 'b'], ['tag', 'c']], 'd'], ['get', 'e']], 'comma prop 3 args'],
+  ['(a,b,c,d)[e] == f;', ['==', ['get', [',', ['tag', 'a'], ['tag', 'b'], ['tag', 'c'], ['tag', 'd']], 'e'], ['get', 'f']], 'comma prop 4 args'],
+  ['([x])[width] == 1;', ['==', ['get', ['[]', 'x'], 'width'], 1], 'attribute with value in parens'],
+  ['(foo[x="bar"])[width] == 1;', ['==', ['get', [['tag', 'foo'], ['[=]', 'x', 'bar']], 'width'], 1], 'attribute with value in parens (deviating tree; equal sign no longer wrapped in squares)'],
   [[
     'a[b] == d;',
     '(a)[b] == d;',
     '(a[b]) == d;',
   ],
-    ["==", ["get", ["tag", "a"], "b"], ["get", "d"]],
+    ['==', ['get', ['tag', 'a'], 'b'], ['get', 'd']],
     'b is var because no other accessor follows it'
   ],
   [[
@@ -960,13 +959,13 @@ var gssRuleTests = [
     '(a[b])[c] == d;',
     '(a[b][c]) == d;',
   ],
-    ["==", ["get", [["tag", "a"], ["[]", "b"]], "c"], ["get", "d"]],
+    ['==', ['get', [['tag', 'a'], ['[]', 'b']], 'c'], ['get', 'd']],
     'b is attr w/o value because in all cases the accessor `[c]` follows it'
   ],
-  ['(a[b]+c[d])[e] == f;', ["==", ["get", [["tag", "a"], ["[]", "b"], ["+"], ["tag", "c"], ["[]", "d"]], "e"], ["get", "f"]], 'double tag with attr w/o value, wrapped'],
-  ['(a[b] + c[d])[e] == f;', ["==", ["get", [["tag", "a"], ["[]", "b"], ["+"], ["tag", "c"], ["[]", "d"]], "e"], ["get", "f"]], 'double tag with attr w/o value, wrapped'],
-  ['(a[b] c[d])[e] == f;', ["==", ["get", [["tag", "a"], ["[]", "b"], [" "], ["tag", "c"], ["[]", "d"]], "e"], ["get", "f"]], 'double tag with attr w/o value, wrapped'],
-  ['(a[b],b)[c] == d;', ["==", ["get", [",", [["tag", "a"], ["[]", "b"]], ["tag", "b"]], "c"], ["get", "d"]], 'b is attr w/o value in comma'],
+  ['(a[b]+c[d])[e] == f;', ['==', ['get', [['tag', 'a'], ['[]', 'b'], ['+'], ['tag', 'c'], ['[]', 'd']], 'e'], ['get', 'f']], 'double tag with attr w/o value, wrapped'],
+  ['(a[b] + c[d])[e] == f;', ['==', ['get', [['tag', 'a'], ['[]', 'b'], ['+'], ['tag', 'c'], ['[]', 'd']], 'e'], ['get', 'f']], 'double tag with attr w/o value, wrapped'],
+  ['(a[b] c[d])[e] == f;', ['==', ['get', [['tag', 'a'], ['[]', 'b'], [' '], ['tag', 'c'], ['[]', 'd']], 'e'], ['get', 'f']], 'double tag with attr w/o value, wrapped'],
+  ['(a[b],b)[c] == d;', ['==', ['get', [',', [['tag', 'a'], ['[]', 'b']], ['tag', 'b']], 'c'], ['get', 'd']], 'b is attr w/o value in comma'],
   [[
     '(a,b)[c][d] == e',
     '((a,b)[c])[d] == e',
@@ -975,24 +974,24 @@ var gssRuleTests = [
     'mixing commas and square blocks'
   ],
   ['(a[c], b[c])[d] == e',
-    ["==", ["get", [",", [["tag", "a"], ["[]", "c"]], [["tag", "b"], ["[]", "c"]]], "d"], ["get", "e"]],
+    ['==', ['get', [',', [['tag', 'a'], ['[]', 'c']], [['tag', 'b'], ['[]', 'c']]], 'd'], ['get', 'e']],
     'same as `(a,b)[c][d] == e` but different parse tree (same if normalized)'
   ],
   ['((a[b] + c[d])[e] + f[g]) == h',
-    ["==", ["+", ["get", [["tag", "a"], ["[]", "b"], ["+"], ["tag", "c"], ["[]", "d"]], "e"], ["get", ["tag", "f"], "g"]], ["get", "h"]],
+    ['==', ['+', ['get', [['tag', 'a'], ['[]', 'b'], ['+'], ['tag', 'c'], ['[]', 'd']], 'e'], ['get', ['tag', 'f'], 'g']], ['get', 'h']],
     'now you\'re just being evil, the inner most parens contain two attrs (b and d) while e is their accessor and toplevel is calc'
   ],
-  ['(.a.b c)[d] == e', ["==", ["get", [[".", "a"], [".", "b"], [" "], ["tag", "c"]], "d"], ["get", "e"]], 'atom `.a.b` with multiple parts, combinator, atom, with accessor for group (checks accessor scoping)'],
+  ['(.a.b c)[d] == e', ['==', ['get', [['.', 'a'], ['.', 'b'], [' '], ['tag', 'c']], 'd'], ['get', 'e']], 'atom `.a.b` with multiple parts, combinator, atom, with accessor for group (checks accessor scoping)'],
 
   // some tests with calc/selector ambiguity
-  ['(.a.b + c[z])[d] == e', ["==", ["get", [[".", "a"], [".", "b"], ["+"], ["tag", "c"], ["[]", "z"]], "d"], ["get", "e"]], 'calc selector ambiguity'],
-  ['(.a.b + c[z=x])[d] == e', ["==", ["get", [[".", "a"], [".", "b"], ["+"], ["tag", "c"], ["[=]", "z", "x"]], "d"], ["get", "e"]], 'calc selector ambiguity'],
-  ['(.a.b + c[z="x"])[d] == e', ["==", ["get", [[".", "a"], [".", "b"], ["+"], ["tag", "c"], ["[=]", "z", "x"]], "d"], ["get", "e"]], 'calc selector ambiguity'],
-  ['(.a.b + c[z][d])[e] == f', ["==", ["get", [[".", "a"], [".", "b"], ["+"], ["tag", "c"], ["[]", "z"], ["[]", "d"]], "e"], ["get", "f"]], 'calc selector ambiguity'],
-  ['(.a.b + c[z=x][d])[e] == f', ["==", ["get", [[".", "a"], [".", "b"], ["+"], ["tag", "c"], ["[=]", "z", "x"], ["[]", "d"]], "e"], ["get", "f"]], 'calc selector ambiguity'],
-  ['(.a.b + c[z="x"][y])[d] == f', ["==", ["get", [[".", "a"], [".", "b"], ["+"], ["tag", "c"], ["[=]", "z", "x"], ["[]", "y"]], "d"], ["get", "f"]], 'calc selector ambiguity'],
-  ['(a + b) == z', ["==", ["+", ["get", "a"], ["get", "b"]], ["get", "z"]], 'calc selector ambiguity'],
-  ['(a + b[c]) == z', ["==", ["+", ["get", "a"], ["get", ["tag", "b"], "c"]], ["get", "z"]], 'calc selector ambiguity'],
+  ['(.a.b + c[z])[d] == e', ['==', ['get', [['.', 'a'], ['.', 'b'], ['+'], ['tag', 'c'], ['[]', 'z']], 'd'], ['get', 'e']], 'calc selector ambiguity'],
+  ['(.a.b + c[z=x])[d] == e', ['==', ['get', [['.', 'a'], ['.', 'b'], ['+'], ['tag', 'c'], ['[=]', 'z', 'x']], 'd'], ['get', 'e']], 'calc selector ambiguity'],
+  ['(.a.b + c[z="x"])[d] == e', ['==', ['get', [['.', 'a'], ['.', 'b'], ['+'], ['tag', 'c'], ['[=]', 'z', 'x']], 'd'], ['get', 'e']], 'calc selector ambiguity'],
+  ['(.a.b + c[z][d])[e] == f', ['==', ['get', [['.', 'a'], ['.', 'b'], ['+'], ['tag', 'c'], ['[]', 'z'], ['[]', 'd']], 'e'], ['get', 'f']], 'calc selector ambiguity'],
+  ['(.a.b + c[z=x][d])[e] == f', ['==', ['get', [['.', 'a'], ['.', 'b'], ['+'], ['tag', 'c'], ['[=]', 'z', 'x'], ['[]', 'd']], 'e'], ['get', 'f']], 'calc selector ambiguity'],
+  ['(.a.b + c[z="x"][y])[d] == f', ['==', ['get', [['.', 'a'], ['.', 'b'], ['+'], ['tag', 'c'], ['[=]', 'z', 'x'], ['[]', 'y']], 'd'], ['get', 'f']], 'calc selector ambiguity'],
+  ['(a + b) == z', ['==', ['+', ['get', 'a'], ['get', 'b']], ['get', 'z']], 'calc selector ambiguity'],
+  ['(a + b[c]) == z', ['==', ['+', ['get', 'a'], ['get', ['tag', 'b'], 'c']], ['get', 'z']], 'calc selector ambiguity'],
   ['a + b - c / d == foo', ['==', ['/', ['-', ['+', ['get', 'a'], ['get', 'b']], ['get', 'c']], ['get', 'd']], ['get', 'foo']], 'calc selector ambiguity'],
   ['[a] + [b] - [c] == foo', ['==', ['-', ['+', ['get', 'a'], ['get', 'b']], ['get', 'c']], ['get', 'foo']], 'calc selector ambiguity'],
   ['[a] + [b] - [c] / [d] == foo', ['==', ['/', ['-', ['+', ['get', 'a'], ['get', 'b']], ['get', 'c']], ['get', 'd']], ['get', 'foo']], 'calc selector ambiguity'],
@@ -1008,24 +1007,24 @@ var gssRuleTests = [
     ['==', ['/', ['-', ['+', ['get', ['.', 'a'], 'x'], ['get', ['#', 'b'], 'y']], ['get', ['tag', 'c'], 'z']], ['get', 'd']], ['get', 'foo']],
     'calc selector ambiguity'
   ],
-  ['a[x] + b[y] == c;', ["==", ["+", ["get", ["tag", "a"], "x"], ["get", ["tag", "b"], "y"]], ["get", "c"]], 'calc selector ambiguity'],
+  ['a[x] + b[y] == c;', ['==', ['+', ['get', ['tag', 'a'], 'x'], ['get', ['tag', 'b'], 'y']], ['get', 'c']], 'calc selector ambiguity'],
   // complex mode switching and backtracking
   ['(a:foo)[x] == c;', ['==', ['get', [['tag', 'a'], [':foo']], 'x'], ['get', 'c']], 'simple pseudo'],
   ['(a:foo())[x] == c;', ['==', ['get', [['tag', 'a'], [':foo']], 'x'], ['get', 'c']], 'empty pseudo call'],
   ['(a:nth-child(5))[x] == c;',
-    ["==", ["get", [["tag", "a"], [":nth-child", 5]], "x"], ["get", "c"]],
+    ['==', ['get', [['tag', 'a'], [':nth-child', 5]], 'x'], ['get', 'c']],
     'single pseudo call arg'
   ],
   ['(a:nth-child(5n+3))[x] == c;',
-    ["==", ["get", [["tag", "a"], [":nth-child", 5, 3]], "x"], ["get", "c"]],
+    ['==', ['get', [['tag', 'a'], [':nth-child', 5, 3]], 'x'], ['get', 'c']],
     'calc(css(calc))'
   ],
   ['(.b a:nth-child(5n+3))[x] == c;',
-    ["==", ["get", [[".", "b"], [" "], ["tag", "a"], [":nth-child", 5, 3]], "x"], ["get", "c"]],
+    ['==', ['get', [['.', 'b'], [' '], ['tag', 'a'], [':nth-child', 5, 3]], 'x'], ['get', 'c']],
     'calc(css(calc))'
   ],
   ['5 * (.b a:nth-child(5n+3))[x] == c;',
-    ["==", ["*", 5, ["get", [[".", "b"], [" "], ["tag", "a"], [":nth-child", 5, 3]], "x"]], ["get", "c"]],
+    ['==', ['*', 5, ['get', [['.', 'b'], [' '], ['tag', 'a'], [':nth-child', 5, 3]], 'x']], ['get', 'c']],
     'calc(css(calc))'
   ],
   ['5 * (a + b)[c] == d',
@@ -1045,15 +1044,15 @@ var gssRuleTests = [
     'inner block cannot be accessor'
   ],
   ['(.a[b] + c)[d] == e',
-    ["==", ["get", [[".", "a"], ["[]", "b"], ["+"], ["tag", "c"]], "d"], ["get", "e"]],
+    ['==', ['get', [['.', 'a'], ['[]', 'b'], ['+'], ['tag', 'c']], 'd'], ['get', 'e']],
     'inner block can not be accessor because paren body cannot be calc due to outside accessor'
   ],
   ['(c + .a[b])[d] == e',
-    ["==", ["get", [["tag", "c"], ["+"], [".", "a"], ["[]", "b"]], "d"], ["get", "e"]],
+    ['==', ['get', [['tag', 'c'], ['+'], ['.', 'a'], ['[]', 'b']], 'd'], ['get', 'e']],
     'inner block becomes attr after backtrack'
   ],
   ['(c + .a[b]) == e',
-    ["==", ["+", ["get", "c"], ["get", [".", "a"], "b"]], ["get", "e"]],
+    ['==', ['+', ['get', 'c'], ['get', ['.', 'a'], 'b']], ['get', 'e']],
     'inner block is accessor'
   ],
   ['(a > c)[d] >= e',
@@ -1061,23 +1060,23 @@ var gssRuleTests = [
     'child combinator, not constraint, in group'
   ],
   ['((a[attr], b[attr2]) > c)[d] == e',
-    ["==", ["get", [[",", [["tag", "a"], ["[]", "attr"]], [["tag", "b"], ["[]", "attr2"]]], [">"], ["tag", "c"]], "d"], ["get", "e"]],
+    ['==', ['get', [[',', [['tag', 'a'], ['[]', 'attr']], [['tag', 'b'], ['[]', 'attr2']]], ['>'], ['tag', 'c']], 'd'], ['get', 'e']],
     'slightly complex selectors in a nested comma group'
   ],
   ['(a + b + c) == e',
-    ["==", ["+", ["+", ["get", "a"], ["get", "b"]], ["get", "c"]], ["get", "e"]],
+    ['==', ['+', ['+', ['get', 'a'], ['get', 'b']], ['get', 'c']], ['get', 'e']],
     'simple addition chain'
   ],
   ['(a + b + c)[d] == e',
-    ["==", ["get", [["tag", "a"], ["+"], ["tag", "b"], ["+"], ["tag", "c"]], "d"], ["get", "e"]],
+    ['==', ['get', [['tag', 'a'], ['+'], ['tag', 'b'], ['+'], ['tag', 'c']], 'd'], ['get', 'e']],
     'not addition'
   ],
   ['(a+b, c+d)[e] == f',
-    ["==", ["get", [",", [["tag", "a"], ["+"], ["tag", "b"]], [["tag", "c"], ["+"], ["tag", "d"]]], "e"], ["get", "f"]],
+    ['==', ['get', [',', [['tag', 'a'], ['+'], ['tag', 'b']], [['tag', 'c'], ['+'], ['tag', 'd']]], 'e'], ['get', 'f']],
     'non-atomic css selectors inside a comma expression'
   ],
   ['(a , b)[c] == d',
-    ["==", ["get", [",", ["tag", "a"], ["tag", "b"]], "c"], ["get", "d"]],
+    ['==', ['get', [',', ['tag', 'a'], ['tag', 'b']], 'c'], ['get', 'd']],
     'just to make sure spaces around comma works'
   ],
 
@@ -1118,7 +1117,7 @@ var gssRuleTests = [
     'a * b, spaced, no parens'
   ],
   ['a * b*c[d] == e;',
-    ["==", ["*", ["get", "a"], ["get", [["tag", "b"], ["tag", "*"], ["tag", "c"]], "d"]], ["get", "e"]],
+    ['==', ['*', ['get', 'a'], ['get', [['tag', 'b'], ['tag', '*'], ['tag', 'c']], 'd']], ['get', 'e']],
     'mixing spaces and non spacing on outer stars'
   ],
   ['a*b * c[d] == e;',
@@ -1134,15 +1133,15 @@ var gssRuleTests = [
     'mixing spaces and non spacing on outer stars on either side of the constraint'
   ],
   ['a*b[c] == d;',
-    ["==", ["get", [["tag", "a"], ["tag", "*"], ["tag", "b"]], "c"], ["get", "d"]],
+    ['==', ['get', [['tag', 'a'], ['tag', '*'], ['tag', 'b']], 'c'], ['get', 'd']],
     'a*b, no spaces, no parens'
   ],
   ['(a * b)[x] == y',
-    ["==", ["get", [["tag", "a"], [" "], ["tag", "*"], [" "], ["tag", "b"]], "x"], ["get", "y"]],
+    ['==', ['get', [['tag', 'a'], [' '], ['tag', '*'], [' '], ['tag', 'b']], 'x'], ['get', 'y']],
     'a * b, spaced, parens; not multiply but: b tag, any decendant tag, any descendant a tag'
   ],
   ['(a*b)[x] == y',
-    ["==", ["get", [["tag", "a"], ["tag", "*"], ["tag", "b"]], "x"], ["get", "y"]],
+    ['==', ['get', [['tag', 'a'], ['tag', '*'], ['tag', 'b']], 'x'], ['get', 'y']],
     'a*b, no spaces, parens: still no multiplication'
   ],
   ['(a * b)*c[x] == y',
@@ -1186,36 +1185,36 @@ var gssRuleTests = [
   // must have double quotes, must have accessors inside expressions
   // exception when parsing content? "set cant have virtuals" https://thegrid.slack.com/archives/gss/p1437060655002050
   // tofix: add more virtuals tests
-  ['"foo"[x] == y', ["==", ["get", ["virtual", "foo"], "x"], ["get", "y"]], 'strings in calc mode are virtuals'],
+  ['"foo"[x] == y', ['==', ['get', ['virtual', 'foo'], 'x'], ['get', 'y']], 'strings in calc mode are virtuals'],
   ['.bg"face" {}',
-    ["rule", [[".", "bg"], ["virtual", "face"]], []],
+    ['rule', [['.', 'bg'], ['virtual', 'face']], []],
     'distilled'
   ],
   ['a { "face" { } }',
-    ["rule", ["tag", "a"], [["rule", ["virtual", "face"], []]]],
+    ['rule', ['tag', 'a'], [['rule', ['virtual', 'face'], []]]],
     'legacy test'
   ],
   ['"face" { }',
-    ["rule", ["virtual", "face"], []],
+    ['rule', ['virtual', 'face'], []],
     'legacy test'
   ],
-  ['.foo"bar" {}', ["rule", [[".", "foo"], ["virtual", "bar"]], []], 'without space combinator'],
-  ['.foo "bar" {}', ["rule", [[".", "foo"], [" "], ["virtual", "bar"]], []], 'with space combinator'],
+  ['.foo"bar" {}', ['rule', [['.', 'foo'], ['virtual', 'bar']], []], 'without space combinator'],
+  ['.foo "bar" {}', ['rule', [['.', 'foo'], [' '], ['virtual', 'bar']], []], 'with space combinator'],
 
   // context modifiers
   // tofix: add more context modifier tests
   ['&y == a', ['==', ['get', ['&'], 'y'], ['get', 'a']], 'current context modifying a var'],
   ['$y == a', ['==', ['get', ['$'], 'y'], ['get', 'a']], 'parent of current context modifying a var'],
   ['^y == a', ['==', ['get', ['^'], 'y'], ['get', 'a']], 'parent of current context modifying a var'],
-  ['^^^y == a', ["==", ["get", ["^", 3], "y"], ["get", "a"]], 'third parent of current context modifying a var'],
-  ['&[y] == a', ["==", ["get", ["&"], "y"], ["get", "a"]], 'current context on accessor'],
-  ['$[y] == a', ["==", ["get", ["$"], "y"], ["get", "a"]], 'parent of current context on accessor'],
-  ['^[y] == a', ["==", ["get", ["^"], "y"], ["get", "a"]], 'parent of current context on accessor'],
-  ['^^^[y] == a', ["==", ["get", ["^", 3], "y"], ["get", "a"]], 'third parent of current context on accessor'],
-  ['(&)[y] == a', ["==", ["get", ["&"], "y"], ["get", "a"]], 'grouped, current context on accessor'],
-  ['($)[y] == a', ["==", ["get", ["$"], "y"], ["get", "a"]], 'grouped, parent of current context on accessor'],
-  ['(^)[y] == a', ["==", ["get", ["^"], "y"], ["get", "a"]], 'grouped, parent of current context on accessor'],
-  ['(^^^)[y] == a', ["==", ["get", ["^", 3], "y"], ["get", "a"]], 'grouped, third parent of current context on accessor'],
+  ['^^^y == a', ['==', ['get', ['^', 3], 'y'], ['get', 'a']], 'third parent of current context modifying a var'],
+  ['&[y] == a', ['==', ['get', ['&'], 'y'], ['get', 'a']], 'current context on accessor'],
+  ['$[y] == a', ['==', ['get', ['$'], 'y'], ['get', 'a']], 'parent of current context on accessor'],
+  ['^[y] == a', ['==', ['get', ['^'], 'y'], ['get', 'a']], 'parent of current context on accessor'],
+  ['^^^[y] == a', ['==', ['get', ['^', 3], 'y'], ['get', 'a']], 'third parent of current context on accessor'],
+  ['(&)[y] == a', ['==', ['get', ['&'], 'y'], ['get', 'a']], 'grouped, current context on accessor'],
+  ['($)[y] == a', ['==', ['get', ['$'], 'y'], ['get', 'a']], 'grouped, parent of current context on accessor'],
+  ['(^)[y] == a', ['==', ['get', ['^'], 'y'], ['get', 'a']], 'grouped, parent of current context on accessor'],
+  ['(^^^)[y] == a', ['==', ['get', ['^', 3], 'y'], ['get', 'a']], 'grouped, third parent of current context on accessor'],
   ['^--a == b', ['==', ['get', ['^'], '--a'], ['get', 'b']], 'double dash is part of the ident'],
   ['^--aa == b', ['==', ['get', ['^'], '--aa'], ['get', 'b']], 'double dash is part of the ident'],
   ['^^^^^^^^--my-margin-top == ^^^--my-margin-top', ['==', ['get', ['^', 8], '--my-margin-top'], ['get', ['^', 3], '--my-margin-top']], 'original test case'],
@@ -1230,8 +1229,8 @@ var gssRuleTests = [
   ['(a[x] + (4n3))', ['+', ['get', ['tag', 'a'], 'x'], ['n3', 4]], '4n3 is read as `4 n3` where `n3` becomes the unit (runtime error)'],
 
   // rule nesting
-  ['a { b: c; }', ["rule", ["tag", "a"], [["set", "b", ['get', "c"]]]], 'nest'],
-  ['a { b == c; }', ["rule", ["tag", "a"], [["==", ["get", "b"], ["get", "c"]]]], 'nest'],
+  ['a { b: c; }', ['rule', ['tag', 'a'], [['set', 'b', ['get', 'c']]]], 'nest'],
+  ['a { b == c; }', ['rule', ['tag', 'a'], [['==', ['get', 'b'], ['get', 'c']]]], 'nest'],
   ['a { b == c; d == e; }', ['rule', ['tag', 'a'], [['==', ['get', 'b'], ['get', 'c']], ['==', ['get', 'd'], ['get', 'e']]]], 'nest double declaration (wrapping check)'],
   [[
     'a { b { c: d; }; }', // note: peg requires a semi after first nest
@@ -1239,7 +1238,7 @@ var gssRuleTests = [
     'a { b { c: d }; }',
     'a { b { c: d } }',
   ],
-    ['rule', ['tag', 'a'], [["rule", ["tag", "b"], [["set", "c", ['get', "d"]]]]
+    ['rule', ['tag', 'a'], [['rule', ['tag', 'b'], [['set', 'c', ['get', 'd']]]]
     ]], // modified: `get` d, dont extra wrap the ruleset for b
     'double nesting semi test'
   ],
@@ -1259,7 +1258,7 @@ var gssRuleTests = [
     'a { b :<= c; } d{ }', // for peg
     'a { b : <= c; }\nd { }', // peg only parses this version
   ],
-    [["rule", ["tag", "a"], [["<=", ["get", ["&"], "b"], ["get", "c"]]]], ['rule', ['tag', 'd'], []]], // modified; remove empty wrapping
+    [['rule', ['tag', 'a'], [['<=', ['get', ['&'], 'b'], ['get', 'c']]]], ['rule', ['tag', 'd'], []]], // modified; remove empty wrapping
     'confirm nested rules dont accidentally consume }'
   ],
   [[
@@ -1268,7 +1267,7 @@ var gssRuleTests = [
     'a { b { c == d }; }',
     'a { b { c == d; }; }', // for peg
   ],
-    ["rule", ["tag", "a"], [["rule", ["tag", "b"], [["==", ["get", "c"], ["get", "d"]]]]]],
+    ['rule', ['tag', 'a'], [['rule', ['tag', 'b'], [['==', ['get', 'c'], ['get', 'd']]]]]],
     'double nesting with gss rule inside'
   ],
   [[
@@ -1276,14 +1275,14 @@ var gssRuleTests = [
     'a { b { c:foo()[x] == d; }; }', // for peg
   ],
     //["rule",["tag","a"],[["rule",["tag","b"],[["set","c","foo() == d"]]]]], // makes no sense
-    ['rule',['tag','a'],[['rule',['tag','b'],[['==',['get',[['tag','c'],[':foo']],'x'],['get','d']]]]]], // TOFIX: shouldnt foo become `['foo']`?
+    ['rule', ['tag', 'a'], [['rule', ['tag', 'b'], [['==', ['get', [['tag', 'c'], [':foo']], 'x'], ['get', 'd']]]]]], // TOFIX: shouldnt foo become `['foo']`?
     'double nesting with gss rule inside and a red herring colon but still a rule, not declaration'
   ],
   [[
     'a { b { c:== d } }',
     'a { b { c:== d; }; }',
   ],
-    ["rule", ["tag", "a"], [["rule", ["tag", "b"], [["==", ["get", ["&"], "c"], ["get", "d"]]]]]],
+    ['rule', ['tag', 'a'], [['rule', ['tag', 'b'], [['==', ['get', ['&'], 'c'], ['get', 'd']]]]]],
     'double nesting with gss rule inside and a red herring colon but then a constraint op and still not a rule but a declaration'
   ],
   ['a { b { c(.foo:hover[d]) == e } }',
@@ -1305,19 +1304,19 @@ var gssRuleTests = [
   ['(x) y == z', ['==', ['y', ['get', 'x']], ['get', 'z']], 'value space unit, group is also just a unit'],
   ['(x y) z == a', ['==', ['z', ['y', ['get', 'x']]], ['get', 'a']], 'similar case'],
   // nested var units
-  ['(10) b == c', ["==", ["b", 10], ["get", "c"]], 'value wrapped in parens'],
+  ['(10) b == c', ['==', ['b', 10], ['get', 'c']], 'value wrapped in parens'],
   [[
     'a == y + z em;',
     'a == y + (z em);',
   ],
-    ["==", ["get", "a"], ["+", ["get", "y"], ["em", ["get", "z"]]]],
+    ['==', ['get', 'a'], ['+', ['get', 'y'], ['em', ['get', 'z']]]],
     'regression: unit should wrap the z only, the plus should wrap the rest'
   ],
   ['a == (y + z) em;',
-    ["==", ["get", "a"], ["em", ["+", ["get", "y"], ["get", "z"]]]],
+    ['==', ['get', 'a'], ['em', ['+', ['get', 'y'], ['get', 'z']]]],
     'regression: the unit should wrap the plus'
   ],
-  ['a x + b y + c z == n', ["==", ["+", ["+", ["x", ["get", "a"]], ["y", ["get", "b"]]], ["z", ["get", "c"]]], ["get", "n"]], 'plusses go left to right but units mess that up a little'],
+  ['a x + b y + c z == n', ['==', ['+', ['+', ['x', ['get', 'a']], ['y', ['get', 'b']]], ['z', ['get', 'c']]], ['get', 'n']], 'plusses go left to right but units mess that up a little'],
   //['a x , b y , c z == n', [], 'sanity check for units vs comma'], // probably illegal case, comma on top level doesnt make much sense
   //['a x + b y , c z == n', [], 'mix units comma and plus'], // probably illegal case, comma on top level doesnt make much sense
   // unit suffix tests; mixing idents with funcs
@@ -1391,7 +1390,7 @@ var gssRuleTests = [
     '(foo(x) bar(y)) == y', // for peg
     '(foo(x)bar(y)) == y', // for peg
   ],
-    ["==", [["foo", ["get", "x"]], ["bar", ["get", "y"]]], ["get", "y"]],
+    ['==', [['foo', ['get', 'x']], ['bar', ['get', 'y']]], ['get', 'y']],
     'explicit case from chat, also the whitespace makes no difference here'
   ],
 
@@ -1403,7 +1402,7 @@ var gssRuleTests = [
     '(a, (b, c, e))[x] == d',
     '((a, b), (c, e))[x] == d',
   ],
-    ["==", ["get", [",", ["tag", "a"], ["tag", "b"], ["tag", "c"], ["tag", "e"]], "x"], ["get", "d"]],
+    ['==', ['get', [',', ['tag', 'a'], ['tag', 'b'], ['tag', 'c'], ['tag', 'e']], 'x'], ['get', 'd']],
     'comma lists should be flattened'
   ],
 
@@ -1413,34 +1412,34 @@ var gssRuleTests = [
   ['ul[height] == &intrinsic-height;', ['==', ['get', ['tag', 'ul'], 'height'], ['get', ['&'], 'intrinsic-height']], 'and'],
   ['@foo[x] == y', ['@', 'foo', '[', 'x', ']', '==', 'y']],
   ['.bg"face" {}',
-    ["rule", [[".", "bg"], ["virtual", "face"]], []],
+    ['rule', [['.', 'bg'], ['virtual', 'face']], []],
     'distill'
   ],
   ['x { .bg"face" {} }',
-    ["rule", ["tag", "x"], [["rule", [[".", "bg"], ["virtual", "face"]], []]]],
+    ['rule', ['tag', 'x'], [['rule', [['.', 'bg'], ['virtual', 'face']], []]]],
     'wrapped dot causing error?'
   ],
-  ['a { b: = 10 }', ["rule", ["tag", "a"], [["=", ["get", ["&"], "b"], 10]]], 'gss in decl value'],
+  ['a { b: = 10 }', ['rule', ['tag', 'a'], [['=', ['get', ['&'], 'b'], 10]]], 'gss in decl value'],
 
 
   // weird extra wrapping case in `(a, b){}`, b would get extra group
-  ['("fling") { }', ["rule", ["virtual", "fling"], []], 'extra wrapping'],
-  ['(a b) { }', ["rule", [['tag', 'a'], [" "], ["tag", "b"]], []], 'extra wrapping'],
-  ['(a "fling") { }', ["rule", [["tag", 'a'], [" "], ["virtual", "fling"]], []], 'extra wrapping'],
-  ['(::this b) { }', ["rule", [["&"], [" "], ["tag", "b"]], []], 'extra wrapping'],
-  ['(::this "fling") { }', ["rule", [["&"], [" "], ["virtual", "fling"]], []], 'extra wrapping'],
-  ['((::this "fling")) { }', ["rule", [["&"], [" "], ["virtual", "fling"]], []], 'extra wrapping'],
+  ['("fling") { }', ['rule', ['virtual', 'fling'], []], 'extra wrapping'],
+  ['(a b) { }', ['rule', [['tag', 'a'], [' '], ['tag', 'b']], []], 'extra wrapping'],
+  ['(a "fling") { }', ['rule', [['tag', 'a'], [' '], ['virtual', 'fling']], []], 'extra wrapping'],
+  ['(::this b) { }', ['rule', [['&'], [' '], ['tag', 'b']], []], 'extra wrapping'],
+  ['(::this "fling") { }', ['rule', [['&'], [' '], ['virtual', 'fling']], []], 'extra wrapping'],
+  ['((::this "fling")) { }', ['rule', [['&'], [' '], ['virtual', 'fling']], []], 'extra wrapping'],
   [[
     'a, b { }',
     '(a, b) { }',
     '(a, (b)) { }',
   ],
-    ["rule", [",", ["tag", "a"], ["tag", "b"]], []],
+    ['rule', [',', ['tag', 'a'], ['tag', 'b']], []],
     'extra wrapping'
   ],
-  ['(a, (::this "fling")) { }', ["rule", [",", ["tag", 'a'], [["&"], [" "], ["virtual", "fling"]]], []], 'extra wrapping'],
+  ['(a, (::this "fling")) { }', ['rule', [',', ['tag', 'a'], [['&'], [' '], ['virtual', 'fling']]], []], 'extra wrapping'],
   ['((::this), (::scope .box), (::this .post), (::scope), (::this "fling")) { }',
-    ["rule", [",", ["&"], [[":scope"], [" "], [".", "box"]], [["&"], [" "], [".", "post"]], [":scope"], [["&"], [" "], ["virtual", "fling"]]], []],
+    ['rule', [',', ['&'], [[':scope'], [' '], ['.', 'box']], [['&'], [' '], ['.', 'post']], [':scope'], [['&'], [' '], ['virtual', 'fling']]], []],
     'extra wrapping'
   ],
 
@@ -1449,43 +1448,43 @@ var gssRuleTests = [
     'foo { @if [x] >= 100 { } }',
     'foo { @if [x] >= 100 { }; }', // for peg
   ],
-    ["rule", ["tag", "foo"], [['@', 'if', '[', 'x', ']', '>=', '100', '{', '}']]], '@if nested'
+    ['rule', ['tag', 'foo'], [['@', 'if', '[', 'x', ']', '>=', '100', '{', '}']]], '@if nested'
   ],
 
   // some nested call cases
-  ['outer(mid(inner()));', ["outer", ["mid", ["inner"]]], 'legacy test'],
+  ['outer(mid(inner()));', ['outer', ['mid', ['inner']]], 'legacy test'],
   ['a()', ['a'], 'a call'],
-  ['a(b()); foo(#bar);', [["a", ["b"]], ["foo", ["#", "bar"]]], 'make sure both cases get proper wrapping'],
+  ['a(b()); foo(#bar);', [['a', ['b']], ['foo', ['#', 'bar']]], 'make sure both cases get proper wrapping'],
   ['a(b())', ['a', ['b']], 'a call wraps b call'],
-  ['a(b() c())', ["a", [["b"], ["c"]]], 'a call wraps b and c call'],
+  ['a(b() c())', ['a', [['b'], ['c']]], 'a call wraps b and c call'],
   ['a(1)', ['a', 1], 'call 1'],
-  ['a(b(1))', ["a", ["b", 1]], 'nested call 1'],
-  ['a(b(),c())', ["a", ["b"], ["c"]], 'comma nested call'],
+  ['a(b(1))', ['a', ['b', 1]], 'nested call 1'],
+  ['a(b(),c())', ['a', ['b'], ['c']], 'comma nested call'],
   ['outer(inner(1),inner(2),inner(3));', ['outer', ['inner', 1], ['inner', 2], ['inner', 3]], 'regression case'],
-  ['vars(foo, bar);', ["vars", ["get", "foo"], ["get", 'bar']], 'func two var args'],
+  ['vars(foo, bar);', ['vars', ['get', 'foo'], ['get', 'bar']], 'func two var args'],
   ['vars(#foo, #bar);', ['vars', ['#', 'foo'], ['#', 'bar']], 'func two selector args'],
-  ['vars(foo, #bar);', ["vars", ["get", "foo"], ["#", 'bar']], 'func two args mixed'],
-  ['vars(#foo, bar);', ["vars", ["#", "foo"], ["get", 'bar']], 'func two args mixed reversed'],
+  ['vars(foo, #bar);', ['vars', ['get', 'foo'], ['#', 'bar']], 'func two args mixed'],
+  ['vars(#foo, bar);', ['vars', ['#', 'foo'], ['get', 'bar']], 'func two args mixed reversed'],
 
   // regressions
-  [wrap('x: >  100;'), wrap([">", ["get", ["&"], "x"], 100]), 'regression; was not wrapping > as a constraint'],
-  ['a == c;', ["==", ["get", "a"], ["get", "c"]], 'regression; a should be wrapped in get but wasnt'],
-  ['a * b == c;', ["==", ["*", ["get", "a"], ["get", "b"]], ["get", "c"]], 'regression; a should be wrapped in get but wasnt'],
+  [wrap('x: >  100;'), wrap(['>', ['get', ['&'], 'x'], 100]), 'regression; was not wrapping > as a constraint'],
+  ['a == c;', ['==', ['get', 'a'], ['get', 'c']], 'regression; a should be wrapped in get but wasnt'],
+  ['a * b == c;', ['==', ['*', ['get', 'a'], ['get', 'b']], ['get', 'c']], 'regression; a should be wrapped in get but wasnt'],
   ['grid-height * #box2[width]<= 2>= 3< 4>= 5;', ['>=', ['<', ['>=', ['<=', ['*', ['get', 'grid-height'], ['get', ['#', 'box2'], 'width']], 2], 3], 4], 5], 'regression; original test case'],
   [wrap('x: =  100;'),
     ['rule', ['tag', 'divv'], [['=', ['get', ['&'], 'x'], 100]]],
     'regression: dunno'
   ],
   [wrap('x: =  100; a:b;'),
-    ["rule", ["tag", "divv"], [["=", ["get", ["&"], "x"], 100], ["set", "a", ['get', "b"]]]], // modified: get b
+    ['rule', ['tag', 'divv'], [['=', ['get', ['&'], 'x'], 100], ['set', 'a', ['get', 'b']]]], // modified: get b
     'regression: dunno'
   ],
   [wrap('x: =  100;x: <= 100;        x: <  100;        x: >= 100;    x: >  100;'),
-    ["rule", ["tag", "divv"], [["=", ["get", ["&"], "x"], 100], ["<=", ["get", ["&"], "x"], 100], ["<", ["get", ["&"], "x"], 100], [">=", ["get", ["&"], "x"], 100], [">", ["get", ["&"], "x"], 100]]],
+    ['rule', ['tag', 'divv'], [['=', ['get', ['&'], 'x'], 100], ['<=', ['get', ['&'], 'x'], 100], ['<', ['get', ['&'], 'x'], 100], ['>=', ['get', ['&'], 'x'], 100], ['>', ['get', ['&'], 'x'], 100]]],
     'regression: dunno'
   ],
   [wrap('x: == 100;x: =  100;x: <= 100;        x: <  100;        x: >= 100;    x: >  100;'),
-    ["rule", ["tag", "divv"], [["==", ["get", ["&"], "x"], 100], ["=", ["get", ["&"], "x"], 100], ["<=", ["get", ["&"], "x"], 100], ["<", ["get", ["&"], "x"], 100], [">=", ["get", ["&"], "x"], 100], [">", ["get", ["&"], "x"], 100]]],
+    ['rule', ['tag', 'divv'], [['==', ['get', ['&'], 'x'], 100], ['=', ['get', ['&'], 'x'], 100], ['<=', ['get', ['&'], 'x'], 100], ['<', ['get', ['&'], 'x'], 100], ['>=', ['get', ['&'], 'x'], 100], ['>', ['get', ['&'], 'x'], 100]]],
     'regression: dunno'
   ],
   ['#avatar {height: 160 !require;}',
@@ -1494,11 +1493,11 @@ var gssRuleTests = [
   ],
   [
     '#avatar {height: == 160 !require;}',
-    ["rule", ["#", "avatar"], [["==", ["get", ["&"], "height"], 160, "require"]]],
+    ['rule', ['#', 'avatar'], [['==', ['get', ['&'], 'height'], 160, 'require']]],
     'require disappearing'
   ],
   ['#avatar[height] == 160 !require;',
-    ["==", ["get", ["#", "avatar"], "height"], 160, "require"],
+    ['==', ['get', ['#', 'avatar'], 'height'], 160, 'require'],
     'require different'
   ],
 
@@ -1508,19 +1507,19 @@ var gssRuleTests = [
   ['5px20', ['px20', 5], 'NUMBER no space NUMBER, the `px20` is an identifier and becomes a type like `px` is in 5px'],
 
   // gss decl top level
-  ['x: == y;', ['==',['get',['&'],'x'],['get','y']], 'top level gss declaration'],
-  ['x: <= 5 + 5;', ['<=',['get',['&'],'x'],['+',5,5]], 'top level gss decl with calc'],
+  ['x: == y;', ['==', ['get', ['&'], 'x'], ['get', 'y']], 'top level gss declaration'],
+  ['x: <= 5 + 5;', ['<=', ['get', ['&'], 'x'], ['+', 5, 5]], 'top level gss decl with calc'],
   ['x:previous[left] == 111;',
-    ['==',['get',[['tag','x'],[':previous']],'left'],111],
+    ['==', ['get', [['tag', 'x'], [':previous']], 'left'], 111],
     'legacy; modified ambiguation case'
   ],
   ['x:next.selected[width] == &:previous.selected[width];',
-    ['==',['get',[['tag','x'],[':next'],['.','selected']],'width'],['get',[['&'],[':previous'],['.','selected']],'width']],
+    ['==', ['get', [['tag', 'x'], [':next'], ['.', 'selected']], 'width'], ['get', [['&'], [':previous'], ['.', 'selected']], 'width']],
     'legacy; modified ambiguation case'
   ],
 
   // css declarations in top level
-  ['color: red;', ['set','color',['get','red']], 'css decl in top level without selector'],
+  ['color: red;', ['set', 'color', ['get', 'red']], 'css decl in top level without selector'],
 ];
 var gssPropertyTests = [
   ['div { foo: == bar; }',
@@ -1555,31 +1554,31 @@ var gssPropertyTests = [
   // https://thegrid.slack.com/archives/gss/p1440116833000476
   ['a { abc: calc(a / 1); }',
     //['rule',['tag','a'],[['set','abc',['calc',[['get','a'],'/',1]]]]],
-    ['rule',['tag','a'],[['set','abc',["calc", ["/", ["get", "a"], 1]]]]],
+    ['rule', ['tag', 'a'], [['set', 'abc', ['calc', ['/', ['get', 'a'], 1]]]]],
     'calc is gss'
   ],
   ['x:== calc(15n+23)',
-    ['==',['get',['&'],'x'],['calc',['+',['n',15],23]]],
+    ['==', ['get', ['&'], 'x'], ['calc', ['+', ['n', 15], 23]]],
     'check anb in gss calc context'
   ],
   ['x:== calc(x/y*z)',
-    ['==',['get',['&'],'x'],['calc',['*',['/',['get','x'],['get','y']],['get','z']]]],
+    ['==', ['get', ['&'], 'x'], ['calc', ['*', ['/', ['get', 'x'], ['get', 'y']], ['get', 'z']]]],
     'check anb in gss calc context'
   ],
   ['x: calc(x/y*z)',
-    ['set','x',['calc',['*',['/',['get','x'],['get','y']],['get','z']]]],
+    ['set', 'x', ['calc', ['*', ['/', ['get', 'x'], ['get', 'y']], ['get', 'z']]]],
     'check anb in css calc context'
   ],
   ['x:== 100% - 50px',
-    ['==',['get',['&'],'x'],['-',['%',100],['px',50]]],
+    ['==', ['get', ['&'], 'x'], ['-', ['%', 100], ['px', 50]]],
     'regression: gss would not parse % as a value'
   ],
   ['x:== 100% + 50px',
-    ['==',['get',['&'],'x'],['+',['%',100],['px',50]]],
+    ['==', ['get', ['&'], 'x'], ['+', ['%', 100], ['px', 50]]],
     'regression: gss would not parse % as a value'
   ],
   ['x:== 100%-50px',
-    ['==',['get',['&'],'x'],['-',['%',100],['px',50]]],
+    ['==', ['get', ['&'], 'x'], ['-', ['%', 100], ['px', 50]]],
     'regression: gss would not parse % as a value'
   ],
 
@@ -1596,75 +1595,75 @@ var ccssOldTests = [
   ['foo == var;', ['==', ['get', 'foo'], ['get', 'var']], 'legacy test'],
   ['10 == 2 <= 3 < 4 >= 5', ['>=', ['<', ['<=', ['==', 10, 2], 3], 4], 5], 'legacy test'], // modified
   ['((((#box1)[width]) + (("area")[width]))) == ((((#box2)[width]) + ((::window)[width])));',
-    ["==", ["+", ["get", ["#", "box1"], "width"], ["get", ["virtual", "area"], "width"]], ["+", ["get", ["#", "box2"], "width"], ["get", [":window"], "width"]]], // modified: single colon
+    ['==', ['+', ['get', ['#', 'box1'], 'width'], ['get', ['virtual', 'area'], 'width']], ['+', ['get', ['#', 'box2'], 'width'], ['get', [':window'], 'width']]], // modified: single colon
     'legacy test'
   ],
   //['4 == 5 == 6 !strong10', NO_ERROR_TEST, 'legacy test'], //deprecated
   ['4 >= 5 >= 6 !strong10', ['>=', ['>=', 4, 5], 6, 'strong10'], 'legacy test'], //modified
-  ['div[width] == 100 !strong', ["==", ["get", ["tag", "div"], "width"], 100, "strong"]],
+  ['div[width] == 100 !strong', ['==', ['get', ['tag', 'div'], 'width'], 100, 'strong']],
   //['4 == 5 == 6 !my-custom-strength99;4 == 5 == 6 !My-CUSTOM-strengtH99;', NO_ERROR_TEST, 'legacy test'], //deprecated
   ['4 >= 5 >= 6 !my-custom-strength99;4 >= 5 >= 6 !My-CUSTOM-strengtH99;',
     [['>=', ['>=', 4, 5], 6, 'my-custom-strength99'], ['>=', ['>=', 4, 5], 6, 'My-CUSTOM-strengtH99']], //modified
     'legacy test'
   ],
-  ['&[width] == a', ["==", ["get", ["&"], "width"], ["get", "a"]], 'distilled'],
-  ['&(.box)[width] == a', ["==", ["get", [["&"], [".", "box"]], "width"], ["get", "a"]], 'distilled'], // modified (removed extra wrapping)
+  ['&[width] == a', ['==', ['get', ['&'], 'width'], ['get', 'a']], 'distilled'],
+  ['&(.box)[width] == a', ['==', ['get', [['&'], ['.', 'box']], 'width'], ['get', 'a']], 'distilled'], // modified (removed extra wrapping)
   ['a == ::parent(.thing)[width]', ['==', ['get', 'a'], ['get', [':parent', ['.', 'thing']], 'width']], 'legacy test'], // modified: (removed extra wrapping, removed extra colon)
   ['&(.box)[width] == ::parent(.thing)[width]', ['==', ['get', [['&'], ['.', 'box']], 'width'], ['get', [':parent', ['.', 'thing']], 'width']], 'legacy test'], // modified (removed extra wrapping, removed extra colon)
   ['button.big(.text)[width] == 100', ['==', ['get', [['tag', 'button'], ['.', 'big'], ['.', 'text']], 'width'], 100], 'legacy test'],
-  ['"Zone"[width] == 100;', ["==", ["get", ["virtual", "Zone"], "width"], 100], 'legacy test'],
-  ['"A"[left] == "1"[top];', ["==", ["get", ["virtual", "A"], "left"], ["get", ["virtual", "1"], "top"]], 'legacy test'], // modified (x/y, top/left)
-  ['(html #main .boxes)[width] == 100', ["==", ["get", [["tag", "html"], [" "], ["#", "main"], [" "], [".", "boxes"]], "width"], 100], 'legacy test'],
-  [':empty()[width] == 100', ["==", ["get", [":empty"], "width"], 100], 'distilled'],
+  ['"Zone"[width] == 100;', ['==', ['get', ['virtual', 'Zone'], 'width'], 100], 'legacy test'],
+  ['"A"[left] == "1"[top];', ['==', ['get', ['virtual', 'A'], 'left'], ['get', ['virtual', '1'], 'top']], 'legacy test'], // modified (x/y, top/left)
+  ['(html #main .boxes)[width] == 100', ['==', ['get', [['tag', 'html'], [' '], ['#', 'main'], [' '], ['.', 'boxes']], 'width'], 100], 'legacy test'],
+  [':empty()[width] == 100', ['==', ['get', [':empty'], 'width'], 100], 'distilled'],
   [':string(\'hello\')[width] == 100', ['==', ['get', [':string', 'hello'], 'width'], 100], 'distilled'], // modified: string is now a virtual
   [':sel(.thing.other:sel(.inner)):num(1401):string(\'hello\'):empty()[width] == 100',
     ['==', ['get', [[':sel', [['.', 'thing'], ['.', 'other'], [':sel', ['.', 'inner']]]], [':num', 1401], [':string', 'hello'], [':empty']], 'width'], 100], // modified: string is now a virtual
     'legacy test'
   ],
-  ['(* #main:not(.disabled) .boxes[data-target])[width] == 100', ["==", ["get", [["tag", "*"], [" "], ["#", "main"], [":not", [".", "disabled"]], [" "], [".", "boxes"], ["[]", "data-target"]], "width"], 100], 'legacy test'],
-  ['(a ! b)[c] == 100', ["==", ["get", [["tag", "a"], ["!"], ["tag", "b"]], "c"], 100], 'distilled'],
+  ['(* #main:not(.disabled) .boxes[data-target])[width] == 100', ['==', ['get', [['tag', '*'], [' '], ['#', 'main'], [':not', ['.', 'disabled']], [' '], ['.', 'boxes'], ['[]', 'data-target']], 'width'], 100], 'legacy test'],
+  ['(a ! b)[c] == 100', ['==', ['get', [['tag', 'a'], ['!'], ['tag', 'b']], 'c'], 100], 'distilled'],
   ['(header !> h2.gizoogle ! section div:get(\'parentNode\'))[target-size] == 100',
-    ["==", ["get", [["tag", "header"], ["!>"], ["tag", "h2"], [".", "gizoogle"], ["!"], ["tag", "section"], [" "], ["tag", "div"], [":get", 'parentNode']], "target-size"], 100], // modified: string is now a virtual
+    ['==', ['get', [['tag', 'header'], ['!>'], ['tag', 'h2'], ['.', 'gizoogle'], ['!'], ['tag', 'section'], [' '], ['tag', 'div'], [':get', 'parentNode']], 'target-size'], 100], // modified: string is now a virtual
     'legacy test'
   ],
-  ['(&.featured)[width] == 100;', ["==", ["get", [["&"], [".", "featured"]], "width"], 100], 'legacy test'],
+  ['(&.featured)[width] == 100;', ['==', ['get', [['&'], ['.', 'featured']], 'width'], 100], 'legacy test'],
   ['(&"column2")[width] == 100;&"column2"[width]  == 100;',
     [
-      ["==", ["get", [["&"], ["virtual", "column2"]], "width"], 100],
-      ["==", ["get", [["&"], ["virtual", "column2"]], "width"], 100]
+      ['==', ['get', [['&'], ['virtual', 'column2']], 'width'], 100],
+      ['==', ['get', [['&'], ['virtual', 'column2']], 'width'], 100]
     ],
     'legacy test'
   ],
-  ['(&:next)[left] == 666;', ["==", ["get", [["&"], [":next"]], "left"], 666], 'legacy test'], // modified: x->left
-  ['&:previous[left] == 111;', ["==", ["get", [["&"], [":previous"]], "left"], 111], 'legacy test'], // modified: x->left
-  ['&:next.selected[width] == &:previous.selected[width];', ["==", ["get", [["&"], [":next"], [".", "selected"]], "width"], ["get", [["&"], [":previous"], [".", "selected"]], "width"]], 'legacy test'],
-  ['a == ([foo!="bar"])[x];', ["==", ["get", "a"], ["get", ["[!=]", "foo", "bar"], "x"]], 'distilled'],
+  ['(&:next)[left] == 666;', ['==', ['get', [['&'], [':next']], 'left'], 666], 'legacy test'], // modified: x->left
+  ['&:previous[left] == 111;', ['==', ['get', [['&'], [':previous']], 'left'], 111], 'legacy test'], // modified: x->left
+  ['&:next.selected[width] == &:previous.selected[width];', ['==', ['get', [['&'], [':next'], ['.', 'selected']], 'width'], ['get', [['&'], [':previous'], ['.', 'selected']], 'width']], 'legacy test'],
+  ['a == ([foo!="bar"])[x];', ['==', ['get', 'a'], ['get', ['[!=]', 'foo', 'bar'], 'x']], 'distilled'],
   ['([foo~="bar"])[x] == ([foo!="bar"])[x];',
-    ["==", ["get", ["[~=]", "foo", "bar"], "x"], ["get", ["[!=]", "foo", "bar"], "x"]],
+    ['==', ['get', ['[~=]', 'foo', 'bar'], 'x'], ['get', ['[!=]', 'foo', 'bar'], 'x']],
     'distilled'
   ],
   ['([foo~="bar"])[x] == ([foo!="bar"])[x];([foo$="bar"])[x] == ([foo*="bar"])[x];([foo ^= "bar"])[x] == ([foo  = "bar"])[x];',
-    [["==", ["get", ["[~=]", "foo", "bar"], "x"], ["get", ["[!=]", "foo", "bar"], "x"]],
-      ["==", ["get", ["[$=]", "foo", "bar"], "x"], ["get", ["[*=]", "foo", "bar"], "x"]],
-      ["==", ["get", ["[^=]", "foo", "bar"], "x"], ["get", ["[=]", "foo", "bar"], "x"]]]
+    [['==', ['get', ['[~=]', 'foo', 'bar'], 'x'], ['get', ['[!=]', 'foo', 'bar'], 'x']],
+      ['==', ['get', ['[$=]', 'foo', 'bar'], 'x'], ['get', ['[*=]', 'foo', 'bar'], 'x']],
+      ['==', ['get', ['[^=]', 'foo', 'bar'], 'x'], ['get', ['[=]', 'foo', 'bar'], 'x']]]
     ,
     'legacy test'
   ],
-  ['(::parent[disabled] ~ li:first)[width] == 100', ["==", ["get", [[":parent"], ["[]", "disabled"], ["~"], ["tag", "li"], [":first"]], "width"], 100], 'legacy test'], // modified: removed a colon
-  ['((#a, #b).c, (#x, #y).z)[a-z] == 0;', ["==", ["get", [",", [[",", ["#", "a"], ["#", "b"]], [".", "c"]], [[",", ["#", "x"], ["#", "y"]], [".", "z"]]], "a-z"], 0], 'legacy test'],
-  [wrap('            y: 100px;'), wrap(["set", "y", ['px', 100]]), 'legacy test'], // modified: split 100px
+  ['(::parent[disabled] ~ li:first)[width] == 100', ['==', ['get', [[':parent'], ['[]', 'disabled'], ['~'], ['tag', 'li'], [':first']], 'width'], 100], 'legacy test'], // modified: removed a colon
+  ['((#a, #b).c, (#x, #y).z)[a-z] == 0;', ['==', ['get', [',', [[',', ['#', 'a'], ['#', 'b']], ['.', 'c']], [[',', ['#', 'x'], ['#', 'y']], ['.', 'z']]], 'a-z'], 0], 'legacy test'],
+  [wrap('            y: 100px;'), wrap(['set', 'y', ['px', 100]]), 'legacy test'], // modified: split 100px
   [wrap('            x  :<= &[y];            y  : 100px;            z  :>= &[y];'),
     wrap([
-      ["<=", ["get", ["&"], "x"], ["get", ["&"], "y"]],
-      ["set", "y", ["px", 100]], // modified: split px
-      [">=", ["get", ["&"], "z"], ["get", ["&"], "y"]]
+      ['<=', ['get', ['&'], 'x'], ['get', ['&'], 'y']],
+      ['set', 'y', ['px', 100]], // modified: split px
+      ['>=', ['get', ['&'], 'z'], ['get', ['&'], 'y']]
     ], MULTI_BODY),
     'legacy test'
   ],
-  ['          #box.class {            color: blue;           x: == 100;          }', ["rule", [["#", "box"], [".", "class"]], [["set", "color", ['get', "blue"]], ["==", ["get", ["&"], "x"], 100]]], 'legacy test'],
-  ['          .class.foo, .class.bar {            color: blue;          }', ["rule", [",", [[".", "class"], [".", "foo"]], [[".", "class"], [".", "bar"]]], [["set", "color", ['get', "blue"]]]], 'legacy test'], // modified: remove empty wrap, made blue a getter
+  ['          #box.class {            color: blue;           x: == 100;          }', ['rule', [['#', 'box'], ['.', 'class']], [['set', 'color', ['get', 'blue']], ['==', ['get', ['&'], 'x'], 100]]], 'legacy test'],
+  ['          .class.foo, .class.bar {            color: blue;          }', ['rule', [',', [['.', 'class'], ['.', 'foo']], [['.', 'class'], ['.', 'bar']]], [['set', 'color', ['get', 'blue']]]], 'legacy test'], // modified: remove empty wrap, made blue a getter
   ['          article.featured > img {            color: black;            .bg"face" {              &[x] == [y];            }            color: black;         }',
-    ["rule", [["tag", "article"], [".", "featured"], [">"], ["tag", "img"]], [["set", "color", ['get', "black"]], ["rule", [[".", "bg"], ["virtual", "face"]], [["==", ["get", ["&"], "x"], ["get", "y"]]]], ["set", "color", ['get', "black"]]]],
+    ['rule', [['tag', 'article'], ['.', 'featured'], ['>'], ['tag', 'img']], [['set', 'color', ['get', 'black']], ['rule', [['.', 'bg'], ['virtual', 'face']], [['==', ['get', ['&'], 'x'], ['get', 'y']]]], ['set', 'color', ['get', 'black']]]],
     'legacy test'
   ],
   ['        @my-custom-directive blah blah blah {                color: blue;                }',
@@ -1735,41 +1734,41 @@ var ccssOldTests = [
   ],
   ['          #b[left] == [left];          [left-col] == [col-left];',
     [
-      ["==", ["get", ["#", "b"], "left"], ["get", "left"]], // modified: x -> left
-      ["==", ["get", "left-col"], ["get", "col-left"]]
+      ['==', ['get', ['#', 'b'], 'left'], ['get', 'left']], // modified: x -> left
+      ['==', ['get', 'left-col'], ['get', 'col-left']]
     ],
     'legacy test'
   ],
-  ['          #b[top] == [top];', ["==", ["get", ["#", "b"], "top"], ["get", "top"]], 'legacy test'], // modified: y->top
-  ['          [right] == ::window[right];', ["==", ["get", "right"], ["get", [":window"], "right"]], 'legacy test'], // modified: width->right, remove a colon
-  ['          [left] == ::window[left];', ["==", ["get", "left"], ["get", [":window"], "left"]], 'legacy test'], // modified: x->left, remove a colon
-  ['          [top] == ::window[top];', ["==", ["get", "top"], ["get", [":window"], "top"]], 'legacy test'], // modified: y->top
-  ['          [bottom] == ::window[bottom];', ["==", ["get", "bottom"], ["get", [":window"], "bottom"]], 'legacy test'], // modified: height->bottom, remove a colon
-  ['          #b[cx] == [cx];', ["==", ["get", ["#", "b"], "cx"], ["get", "cx"]], 'legacy test'], // modified: center-x -> cx
-  ['          #b[cy] == [cy];', ["==", ["get", ["#", "b"], "cy"], ["get", "cy"]], 'legacy test'], // modified: center-y -> cy
+  ['          #b[top] == [top];', ['==', ['get', ['#', 'b'], 'top'], ['get', 'top']], 'legacy test'], // modified: y->top
+  ['          [right] == ::window[right];', ['==', ['get', 'right'], ['get', [':window'], 'right']], 'legacy test'], // modified: width->right, remove a colon
+  ['          [left] == ::window[left];', ['==', ['get', 'left'], ['get', [':window'], 'left']], 'legacy test'], // modified: x->left, remove a colon
+  ['          [top] == ::window[top];', ['==', ['get', 'top'], ['get', [':window'], 'top']], 'legacy test'], // modified: y->top
+  ['          [bottom] == ::window[bottom];', ['==', ['get', 'bottom'], ['get', [':window'], 'bottom']], 'legacy test'], // modified: height->bottom, remove a colon
+  ['          #b[cx] == [cx];', ['==', ['get', ['#', 'b'], 'cx'], ['get', 'cx']], 'legacy test'], // modified: center-x -> cx
+  ['          #b[cy] == [cy];', ['==', ['get', ['#', 'b'], 'cy'], ['get', 'cy']], 'legacy test'], // modified: center-y -> cy
   [[
     '          [left] == 0.4;',
     '          [left] == +0.4;',
     '          [left] == +.4; ',
   ],
-    ["==", ["get", "left"], 0.4],
+    ['==', ['get', 'left'], 0.4],
     'legacy test'
   ],
-  ['          [left] == .4;           [left] == .004;', [["==", ["get", "left"], 0.4], ["==", ["get", "left"], 0.004]], 'legacy test'],
+  ['          [left] == .4;           [left] == .004;', [['==', ['get', 'left'], 0.4], ['==', ['get', 'left'], 0.004]], 'legacy test'],
   [[
     '          [left] == 0 - 1;',
     '          [left] == (0 - 1); ',
     '          [left] == 0-1;'
   ],
-    ["==", ["get", "left"], ["-", 0, 1]],
+    ['==', ['get', 'left'], ['-', 0, 1]],
     'legacy test',
   ],
-  ['          [left] == -1; ', ["==", ["get", "left"], -1], 'legacy test'],
+  ['          [left] == -1; ', ['==', ['get', 'left'], -1], 'legacy test'],
   [[
     '          [left] == -0.4;',
     '          [left] == -.4;',
   ],
-    ["==", ["get", "left"], -0.4],
+    ['==', ['get', 'left'], -0.4],
     'legacy test'
   ],
   [[
@@ -1777,23 +1776,23 @@ var ccssOldTests = [
     '          [left] == (0 + 1);',
     '          [left] == 0+1; ',
   ],
-    ["==", ["get", "left"], ["+", 0, 1]],
+    ['==', ['get', 'left'], ['+', 0, 1]],
     'legacy test'
   ],
-  ['          [left] == +1; ', ["==", ["get", "left"], 1], 'legacy test'],
-  ['            -[x] == -[y]; ', ["==", ["-", 0, ["get", "x"]], ["-", 0, ["get", "y"]]], 'legacy test'],
-  ['1 -[x] == a;', ["==", ["-", 1, ["get", "x"]], ["get", "a"]], 'distilled'],
-  ['1 - -[x] == a;', ["==", ["-", 1, ["-", 0, ["get", "x"]]], ["get", "a"]], 'distilled'],
-  ['-1 -[x] == a;', ["==", ["-", -1, ["get", "x"]], ["get", "a"]], 'distilled'],
-  ['-1 - -[x] == a;', ["==", ["-", -1, ["-", 0, ["get", "x"]]], ["get", "a"]], 'distilled'],
-  ['            -1 - -[x] == -[y] - -1;', ["==", ["-", -1, ["-", 0, ["get", "x"]]], ["-", ["-", 0, ["get", "y"]], -1]], 'legacy test'],
-  ['            -1 + -[x] == -[y] - -[x];', ["==", ["+", -1, ["-", 0, ["get", "x"]]], ["-", ["-", 0, ["get", "y"]], ["-", 0, ["get", "x"]]]], 'legacy test'],
-  ['-1px == a', ["==", ["px", -1], ["get", "a"]], 'distilled'],
-  ['            10px == 0.4px;            -.01px == .01px;', [["==", ["px", 10], ["px", 0.4]], ["==", ["px", -0.01], ["px", 0.01]]], 'legacy test'],
-  ['            10em == 0.4em;            -.01em == .01em;', [["==", ["em", 10], ["em", 0.4]], ["==", ["em", -0.01], ["em", 0.01]]], 'legacy test'],
-  ['            10% == 0.4%;            -.01% == .01%;', [["==", ["%", 10], ["%", 0.4]], ["==", ["%", -0.01], ["%", 0.01]]], 'legacy test'],
-  ['            10my-md == 0.4my-md;            -.01my-md == .01my-md;', [["==", ["my-md", 10], ["my-md", 0.4]], ["==", ["my-md", -0.01], ["my-md", 0.01]]], 'legacy test'],
-  ['            x px == y em;', ["==", ["px", ["get", "x"]], ["em", ["get", "y"]]], 'legacy test'],
+  ['          [left] == +1; ', ['==', ['get', 'left'], 1], 'legacy test'],
+  ['            -[x] == -[y]; ', ['==', ['-', 0, ['get', 'x']], ['-', 0, ['get', 'y']]], 'legacy test'],
+  ['1 -[x] == a;', ['==', ['-', 1, ['get', 'x']], ['get', 'a']], 'distilled'],
+  ['1 - -[x] == a;', ['==', ['-', 1, ['-', 0, ['get', 'x']]], ['get', 'a']], 'distilled'],
+  ['-1 -[x] == a;', ['==', ['-', -1, ['get', 'x']], ['get', 'a']], 'distilled'],
+  ['-1 - -[x] == a;', ['==', ['-', -1, ['-', 0, ['get', 'x']]], ['get', 'a']], 'distilled'],
+  ['            -1 - -[x] == -[y] - -1;', ['==', ['-', -1, ['-', 0, ['get', 'x']]], ['-', ['-', 0, ['get', 'y']], -1]], 'legacy test'],
+  ['            -1 + -[x] == -[y] - -[x];', ['==', ['+', -1, ['-', 0, ['get', 'x']]], ['-', ['-', 0, ['get', 'y']], ['-', 0, ['get', 'x']]]], 'legacy test'],
+  ['-1px == a', ['==', ['px', -1], ['get', 'a']], 'distilled'],
+  ['            10px == 0.4px;            -.01px == .01px;', [['==', ['px', 10], ['px', 0.4]], ['==', ['px', -0.01], ['px', 0.01]]], 'legacy test'],
+  ['            10em == 0.4em;            -.01em == .01em;', [['==', ['em', 10], ['em', 0.4]], ['==', ['em', -0.01], ['em', 0.01]]], 'legacy test'],
+  ['            10% == 0.4%;            -.01% == .01%;', [['==', ['%', 10], ['%', 0.4]], ['==', ['%', -0.01], ['%', 0.01]]], 'legacy test'],
+  ['            10my-md == 0.4my-md;            -.01my-md == .01my-md;', [['==', ['my-md', 10], ['my-md', 0.4]], ['==', ['my-md', -0.01], ['my-md', 0.01]]], 'legacy test'],
+  ['            x px == y em;', ['==', ['px', ['get', 'x']], ['em', ['get', 'y']]], 'legacy test'],
   [[
     '[md-width] == ([width] * 2 - [gap] * 2) / 4 + 10 !require; ',
     'md-width   == ( width * 2 - gap * 2 ) / 4 + 10 !require; ',
@@ -1816,47 +1815,47 @@ var ccssOldTests = [
     ['rule', ['tag', 'divd'], [['set', 'prop', 'empty-func']]], // modified: no empty wrap
     'legacy test'
   ],
-  ['my-spring(1);', ["my-spring", 1], 'legacy test'],
-  ['x == my-spring(1);', ["==", ["get", "x"], ["my-spring", 1]], 'legacy test'],
-  ['x == my-spring(1) + my-func(y);', ["==", ["get", "x"], ["+", ["my-spring", 1], ["my-func", ["get", "y"]]]], 'legacy test'],
-  [wrap('x := my-spring(1 + 2) + my-func(y);'), wrap(["=", ["get", ["&"], "x"], ["+", ["my-spring", ["+", 1, 2]], ["my-func", ["get", "y"]]]]), 'legacy test'],
+  ['my-spring(1);', ['my-spring', 1], 'legacy test'],
+  ['x == my-spring(1);', ['==', ['get', 'x'], ['my-spring', 1]], 'legacy test'],
+  ['x == my-spring(1) + my-func(y);', ['==', ['get', 'x'], ['+', ['my-spring', 1], ['my-func', ['get', 'y']]]], 'legacy test'],
+  [wrap('x := my-spring(1 + 2) + my-func(y);'), wrap(['=', ['get', ['&'], 'x'], ['+', ['my-spring', ['+', 1, 2]], ['my-func', ['get', 'y']]]]), 'legacy test'],
   ['x = a(#box[width]) b(1);',
-    ["=", ["get", "x"], [["a", ["get", ["#", "box"], "width"]], ["b", 1]]],
+    ['=', ['get', 'x'], [['a', ['get', ['#', 'box'], 'width']], ['b', 1]]],
     'legacy test'
   ],
   [[
     'x==my-func(1) !strong90;',
     'x==my-func(1)!strong90;',
   ],
-    ["==", ["get", "x"], ["my-func", 1], "strong90"], // modified: no split for strength
+    ['==', ['get', 'x'], ['my-func', 1], 'strong90'], // modified: no split for strength
     'legacy test'
   ],
   [[
     'x==my-func(1) my-other(1) !strong90;',
     'x==my-func(1)my-other(1)!strong90;',
   ],
-    ["==", ["get", "x"], [["my-func", 1], ["my-other", 1]], "strong90"],
+    ['==', ['get', 'x'], [['my-func', 1], ['my-other', 1]], 'strong90'],
     'legacy test'
   ],
   [[
     '&[width] == ::parent[width]',
     '&width == ::parent[width]',
   ],
-    ["==", ["get", ["&"], "width"], ["get", [":parent"], "width"]], // modified: single colon
+    ['==', ['get', ['&'], 'width'], ['get', [':parent'], 'width']], // modified: single colon
     'legacy test'
   ],
   [[
     '    $width == $y',
     '    $[width] == ($)[y]',
   ],
-    ["==", ["get", ["$"], "width"], ["get", ["$"], "y"]],
+    ['==', ['get', ['$'], 'width'], ['get', ['$'], 'y']],
     'legacy test'
   ],
   [[
     '^width == ^y',
     '^[width] == (^)[y]',
   ],
-    ["==", ["get", ["^"], "width"], ["get", ["^"], "y"]],
+    ['==', ['get', ['^'], 'width'], ['get', ['^'], 'y']],
     'legacy test'
   ],
   [[
@@ -1864,7 +1863,7 @@ var ccssOldTests = [
     '^^[margin-top] == ^[margin-top] - margin-top',
     '( ^^ )[margin-top] == ( ^ )[margin-top] - [margin-top]',
   ],
-    ["==", ["get", ["^", 2], "margin-top"], ["-", ["get", ["^"], "margin-top"], ["get", "margin-top"]]],
+    ['==', ['get', ['^', 2], 'margin-top'], ['-', ['get', ['^'], 'margin-top'], ['get', 'margin-top']]],
     'legacy test'
   ],
   ['^^^^^^^^--my-margin-top == ^^^--my-margin-top',
@@ -1876,12 +1875,12 @@ var ccssOldTests = [
     'similar to other caret test but now var is wrapped in a square block'
   ],
   ['^[left] + [base] == &[left]', ['==', ['+', ['get', ['^'], 'left'], ['get', 'base']], ['get', ['&'], 'left']], 'legacy test'], // modified: x -> left
-  ['"box"[right] == "box2"[left];', ["==", ["get", ["virtual", "box"], "right"], ["get", ["virtual", "box2"], "left"]], 'legacy test'],
+  ['"box"[right] == "box2"[left];', ['==', ['get', ['virtual', 'box'], 'right'], ['get', ['virtual', 'box2'], 'left']], 'legacy test'],
   [[
     '"col1...5"[x] == 0;',
     '("col1","col2","col3","col4","col5")[x] == 0;',
   ],
-    ["==", ["get", [",", ["virtual", "col1"], ["virtual", "col2"], ["virtual", "col3"], ["virtual", "col4"], ["virtual", "col5"]], "x"], 0],
+    ['==', ['get', [',', ['virtual', 'col1'], ['virtual', 'col2'], ['virtual', 'col3'], ['virtual', 'col4'], ['virtual', 'col5']], 'x'], 0],
     'legacy test'
   ],
   [[
@@ -1890,7 +1889,7 @@ var ccssOldTests = [
     '("col-1","col-2...3","col-4")[x] == 0;',
     '("col-1...2","col-3...3","col-4...4")[x] == 0;',
   ],
-    ["==", ["get", [",", ["virtual", "col-1"], ["virtual", "col-2"], ["virtual", "col-3"], ["virtual", "col-4"]], "x"], 0],
+    ['==', ['get', [',', ['virtual', 'col-1'], ['virtual', 'col-2'], ['virtual', 'col-3'], ['virtual', 'col-4']], 'x'], 0],
     'legacy test'
   ],
   [[
@@ -1900,54 +1899,54 @@ var ccssOldTests = [
     '"col1","col2...4","col5" { &[x] == 0; }',
     '"col1...3","col4...5" { &[x] == 0; }',
   ],
-    ["rule", [",", ["virtual", "col1"], ["virtual", "col2"], ["virtual", "col3"], ["virtual", "col4"], ["virtual", "col5"]], [["==", ["get", ["&"], "x"], 0]]],
+    ['rule', [',', ['virtual', 'col1'], ['virtual', 'col2'], ['virtual', 'col3'], ['virtual', 'col4'], ['virtual', 'col5']], [['==', ['get', ['&'], 'x'], 0]]],
     'legacy test'
   ],
-  ['"zone-1-1...3"[x] == 0', ["==", ["get", [",", ["virtual", "zone-1-1"], ["virtual", "zone-1-2"], ["virtual", "zone-1-3"]], "x"], 0], 'legacy test'],
+  ['"zone-1-1...3"[x] == 0', ['==', ['get', [',', ['virtual', 'zone-1-1'], ['virtual', 'zone-1-2'], ['virtual', 'zone-1-3']], 'x'], 0], 'legacy test'],
   //['"zone-1...3-1...3"[x] == 0', ["==", ["get", [",", ["virtual", "zone-1-1"], ["virtual", "zone-1-2"], ["virtual", "zone-1-3"], ["virtual", "zone-2-1"], ["virtual", "zone-2-2"], ["virtual", "zone-2-3"], ["virtual", "zone-3-1"], ["virtual", "zone-3-2"], ["virtual", "zone-3-3"]], "x"], 0], 'legacy test'],
-  ['"zone-1...3-2"[x] == 0', ["==", ["get", [",", ["virtual", "zone-1-2"], ["virtual", "zone-2-2"], ["virtual", "zone-3-2"]], "x"], 0], 'legacy test'],
-  ['#box-2...6[x] == 0', ["==", ["get", [",", ["#", "box-2"], ["#", "box-3"], ["#", "box-4"], ["#", "box-5"], ["#", "box-6"]], "x"], 0], 'legacy test'],
+  ['"zone-1...3-2"[x] == 0', ['==', ['get', [',', ['virtual', 'zone-1-2'], ['virtual', 'zone-2-2'], ['virtual', 'zone-3-2']], 'x'], 0], 'legacy test'],
+  ['#box-2...6[x] == 0', ['==', ['get', [',', ['#', 'box-2'], ['#', 'box-3'], ['#', 'box-4'], ['#', 'box-5'], ['#', 'box-6']], 'x'], 0], 'legacy test'],
   //['#cell-x1...2-y1...2-z1...2[z] == 0', ["==", ["get", [",", ["#", "cell-x1-y1-z1"], ["#", "cell-x1-y1-z2"], ["#", "cell-x1-y2-z1"], ["#", "cell-x1-y2-z2"], ["#", "cell-x2-y1-z1"], ["#", "cell-x2-y1-z2"], ["#", "cell-x2-y2-z1"], ["#", "cell-x2-y2-z2"]], "z"], 0], 'legacy test'],
   [[
     // modified: changed .featured into #features because `2.` is illegal
     '.btn0...2#featured[x]                <= 0',
     '((.btn0, .btn1, .btn2)#featured)[x]  <= 0',
   ],
-    ["<=", ["get", [[",", [".", "btn0"], [".", "btn1"], [".", "btn2"]], ["#", "featured"]], "x"], 0],
+    ['<=', ['get', [[',', ['.', 'btn0'], ['.', 'btn1'], ['.', 'btn2']], ['#', 'featured']], 'x'], 0],
     'legacy test'
   ],
   ['.parent.btn0...2#featured[x] <= 0', // modified: changed .featured into #features because `2.` is illegal
-    ["<=", ["get", [[".", "parent"], [",", [".", "btn0"], [".", "btn1"], [".", "btn2"]], ["#", "featured"]], "x"], 0],
+    ['<=', ['get', [['.', 'parent'], [',', ['.', 'btn0'], ['.', 'btn1'], ['.', 'btn2']], ['#', 'featured']], 'x'], 0],
     'legacy test'
   ],
-  ['$.btn0...2[x] <= 0', ["<=", ["get", [["$"], [",", [".", "btn0"], [".", "btn1"], [".", "btn2"]]], "x"], 0], 'legacy test'],
-  ['$"zone-1...3-2"[x] == 0', ["==", ["get", [["$"], [",", ["virtual", "zone-1-2"], ["virtual", "zone-2-2"], ["virtual", "zone-3-2"]]], "x"], 0], 'legacy test'],
+  ['$.btn0...2[x] <= 0', ['<=', ['get', [['$'], [',', ['.', 'btn0'], ['.', 'btn1'], ['.', 'btn2']]], 'x'], 0], 'legacy test'],
+  ['$"zone-1...3-2"[x] == 0', ['==', ['get', [['$'], [',', ['virtual', 'zone-1-2'], ['virtual', 'zone-2-2'], ['virtual', 'zone-3-2']]], 'x'], 0], 'legacy test'],
   [[
     '"col1...3":first[x] == 0',
     '(("col1", "col2", "col3"):first)[x] == 0',
   ],
-    ["==", ["get", [[",", ["virtual", "col1"], ["virtual", "col2"], ["virtual", "col3"]], [":first"]], "x"], 0],
+    ['==', ['get', [[',', ['virtual', 'col1'], ['virtual', 'col2'], ['virtual', 'col3']], [':first']], 'x'], 0],
     'legacy test'
   ],
   [[
     '"col1...3":last[x] == 0',
     '(("col1", "col2", "col3"):last)[x] == 0',
   ],
-    ["==", ["get", [[",", ["virtual", "col1"], ["virtual", "col2"], ["virtual", "col3"]], [":last"]], "x"], 0],
+    ['==', ['get', [[',', ['virtual', 'col1'], ['virtual', 'col2'], ['virtual', 'col3']], [':last']], 'x'], 0],
     'legacy test'
   ],
   [[
     '(&"grid", .that"grid" , .box ,.thing)[width] == 100',
     '(&"grid"        ,.that"grid" ,.box,.thing)[width] == 100',
   ],
-    ["==", ["get", [",", [["&"], ["virtual", "grid"]], [[".", "that"], ["virtual", "grid"]], [".", "box"], [".", "thing"]], "width"], 100],
+    ['==', ['get', [',', [['&'], ['virtual', 'grid']], [['.', 'that'], ['virtual', 'grid']], ['.', 'box'], ['.', 'thing']], 'width'], 100],
     'legacy test'
   ],
   [[
     wrap('x: == 100;x: =  100;x: <= 100;        x: <  100;        x: >= 100;    x: >  100;'),
     wrap('    x :== 100;    x :=  100;    x :<= 100;            x :<  100;            x :>= 100;            x :>  100;'),
   ],
-    ["rule", ["tag", "divv"], [["==", ["get", ["&"], "x"], 100], ["=", ["get", ["&"], "x"], 100], ["<=", ["get", ["&"], "x"], 100], ["<", ["get", ["&"], "x"], 100], [">=", ["get", ["&"], "x"], 100], [">", ["get", ["&"], "x"], 100]]],
+    ['rule', ['tag', 'divv'], [['==', ['get', ['&'], 'x'], 100], ['=', ['get', ['&'], 'x'], 100], ['<=', ['get', ['&'], 'x'], 100], ['<', ['get', ['&'], 'x'], 100], ['>=', ['get', ['&'], 'x'], 100], ['>', ['get', ['&'], 'x'], 100]]],
     'legacy test'
   ],
 
@@ -1970,25 +1969,25 @@ var ccssOldTests = [
     '        string-func(\'hello\');',
     '  string-func(  \'hello\'  )  ;',
   ],
-    ["string-func", "hello"],
+    ['string-func', 'hello'],
     'legacy test'
   ],
-  ['math-func(10 + x * 2);', ["math-func", ['*', ['+', 10, ['get', 'x']], 2]], 'legacy test'],
-  ['selector-func(#foo.bar);', ["selector-func", [["#", "foo"], [".", "bar"]]], 'legacy test'],
-  ['var-func(my-var);', ["var-func", ["get", "my-var"]], 'legacy test'], // changed: now a tag
-  ['vars-func(my-var, #box[x], .foo.bar[x]);', ["vars-func", ["get", "my-var"], ["get", ["#", "box"], "x"], ["get", [[".", "foo"], [".", "bar"]], "x"]], 'legacy test'],
+  ['math-func(10 + x * 2);', ['math-func', ['*', ['+', 10, ['get', 'x']], 2]], 'legacy test'],
+  ['selector-func(#foo.bar);', ['selector-func', [['#', 'foo'], ['.', 'bar']]], 'legacy test'],
+  ['var-func(my-var);', ['var-func', ['get', 'my-var']], 'legacy test'], // changed: now a tag
+  ['vars-func(my-var, #box[x], .foo.bar[x]);', ['vars-func', ['get', 'my-var'], ['get', ['#', 'box'], 'x'], ['get', [['.', 'foo'], ['.', 'bar']], 'x']], 'legacy test'],
   [[
     'outer(mid(inner()));',
     '            outer(                    mid(                            inner(                           )                    )            )',
   ],
-    ["outer", ["mid", ["inner"]]],
+    ['outer', ['mid', ['inner']]],
     'legacy test'
   ],
   [[
     'outer(inner(1),inner(2),inner(3));',
     '            outer(                    inner( 1 ),                    inner( 2 ),                    inner( 3 )            )',
   ],
-    ["outer", ["inner", 1], ["inner", 2], ["inner", 3]],
+    ['outer', ['inner', 1], ['inner', 2], ['inner', 3]],
     'legacy test'
   ],
   [[
@@ -1996,7 +1995,7 @@ var ccssOldTests = [
     '            dance(                    step(1)            step(2)            step(3))jump(4);',
     'dance(step(1) step(2) step(3))jump(4);',
   ],
-    [["dance", [["step", 1], ["step", 2], ["step", 3]]], ["jump", 4]],
+    [['dance', [['step', 1], ['step', 2], ['step', 3]]], ['jump', 4]],
     'legacy test'
   ],
   [[
@@ -2017,14 +2016,14 @@ var ccssOldTests = [
     '&[width] == ::parent[width]',
     '&width == ::parent[width]',
   ],
-    ["==", ["get", ["&"], "width"], ["get", [":parent"], "width"]],
+    ['==', ['get', ['&'], 'width'], ['get', [':parent'], 'width']],
     'legacy test'
   ],
   [[
     '^width == ^y',
     '^[width] == (^)[y]',
   ],
-    ["==", ["get", ["^"], "width"], ["get", ["^"], "y"]],
+    ['==', ['get', ['^'], 'width'], ['get', ['^'], 'y']],
     'legacy test'
   ],
   [[
@@ -2032,14 +2031,14 @@ var ccssOldTests = [
     '^^[margin-top] == ^[margin-top] - margin-top',
     '( ^^ )[margin-top] == ( ^ )[margin-top] - [margin-top]',
   ],
-    ["==", ["get", ["^", 2], "margin-top"], ["-", ["get", ["^"], "margin-top"], ["get", "margin-top"]]],
+    ['==', ['get', ['^', 2], 'margin-top'], ['-', ['get', ['^'], 'margin-top'], ['get', 'margin-top']]],
     'legacy test'
   ],
   [[
     '"col1...5"[x] == 0;',
     '("col1","col2","col3","col4","col5")[x] == 0;',
   ],
-    ["==", ["get", [",", ["virtual", "col1"], ["virtual", "col2"], ["virtual", "col3"], ["virtual", "col4"], ["virtual", "col5"]], "x"], 0],
+    ['==', ['get', [',', ['virtual', 'col1'], ['virtual', 'col2'], ['virtual', 'col3'], ['virtual', 'col4'], ['virtual', 'col5']], 'x'], 0],
     'legacy test'
   ],
   [[
@@ -2057,7 +2056,7 @@ var ccssOldTests = [
     '        (::this), (::scope .box), (::this .post), (::scope), (::this "fling") {                }',
     '        ((::this), (::scope .box), (::this .post), (::scope), (::this "fling")) {                }',
   ],
-    ["rule", [",", ["&"], [[":scope"], [" "], [".", "box"]], [["&"], [" "], [".", "post"]], [":scope"], [["&"], [" "], ["virtual", "fling"]]], []],
+    ['rule', [',', ['&'], [[':scope'], [' '], ['.', 'box']], [['&'], [' '], ['.', 'post']], [':scope'], [['&'], [' '], ['virtual', 'fling']]], []],
     'legacy test'
   ],
   [[
@@ -2112,7 +2111,7 @@ var ccssOldTests = [
     '                x  px == y         +   z   em;                x  px == y     vw  +   z   em;',
     '                (x)   px == (y       )  +   (z   )em;                ( x )  px == (y     vw)  +   (z   )em;',
   ],
-    [["==", ["px", ["get", "x"]], ["+", ["get", "y"], ["em", ["get", "z"]]]], ["==", ["px", ["get", "x"]], ["+", ["vw", ["get", "y"]], ["em", ["get", "z"]]]]],
+    [['==', ['px', ['get', 'x']], ['+', ['get', 'y'], ['em', ['get', 'z']]]], ['==', ['px', ['get', 'x']], ['+', ['vw', ['get', 'y']], ['em', ['get', 'z']]]]],
     'legacy test'
   ],
   [[
@@ -2127,7 +2126,7 @@ var ccssOldTests = [
     'legacy test'
   ],
   ['                shoe uk-foot-size == ((hand in + head) ft * arm) meter;',
-    ["==", ["uk-foot-size", ["get", "shoe"]], ["meter", ["*", ["ft", ["+", ["in", ["get", "hand"]], ["get", "head"]]], ["get", "arm"]]]],
+    ['==', ['uk-foot-size', ['get', 'shoe']], ['meter', ['*', ['ft', ['+', ['in', ['get', 'hand']], ['get', 'head']]], ['get', 'arm']]]],
     'legacy test'
   ],
   ['        ::scope[width] >= ::this[width] <= ::document[width] > ::viewport[width] < ::window[height]', // modified: == no longer allowed that often
@@ -2147,19 +2146,19 @@ var ccssOldTests = [
     '$width == $y',
     '    $[width] == ($)[y]',
   ],
-    ["==", ["get", ["$"], "width"], ["get", ["$"], "y"]],
+    ['==', ['get', ['$'], 'width'], ['get', ['$'], 'y']],
     'legacy test'
   ],
   ['"zone-1-1...3"[x] == 0',
-    ["==", ["get", [",", ["virtual", "zone-1-1"], ["virtual", "zone-1-2"], ["virtual", "zone-1-3"]], "x"], 0],
+    ['==', ['get', [',', ['virtual', 'zone-1-1'], ['virtual', 'zone-1-2'], ['virtual', 'zone-1-3']], 'x'], 0],
     'legacy test'
   ],
   ['.box-2...6[x] == 0',
-    ["==", ["get", [",", [".", "box-2"], [".", "box-3"], [".", "box-4"], [".", "box-5"], [".", "box-6"]], "x"], 0],
+    ['==', ['get', [',', ['.', 'box-2'], ['.', 'box-3'], ['.', 'box-4'], ['.', 'box-5'], ['.', 'box-6']], 'x'], 0],
     'legacy splats a class'
   ],
   ['box-2...6[x] == 0',
-    ["==", ["get", [",", ["tag", "box-2"], ["tag", "box-3"], ["tag", "box-4"], ["tag", "box-5"], ["tag", "box-6"]], "x"], 0],
+    ['==', ['get', [',', ['tag', 'box-2'], ['tag', 'box-3'], ['tag', 'box-4'], ['tag', 'box-5'], ['tag', 'box-6']], 'x'], 0],
     'legacy splats a tag'
   ],
 
@@ -2185,28 +2184,28 @@ var ccssOldTests = [
 
   // kitchen sink tests torn apart
   ['[gap] == 20 !require; [flex-gap] >= [gap] * 2 !require; [radius] == 10 !require; [outer-radius] == [radius] * 2 !require;',
-    [["==", ["get", "gap"], 20, "require"], [">=", ["get", "flex-gap"], ["*", ["get", "gap"], 2], "require"], ["==", ["get", "radius"], 10, "require"], ["==", ["get", "outer-radius"], ["*", ["get", "radius"], 2], "require"]],
+    [['==', ['get', 'gap'], 20, 'require'], ['>=', ['get', 'flex-gap'], ['*', ['get', 'gap'], 2], 'require'], ['==', ['get', 'radius'], 10, 'require'], ['==', ['get', 'outer-radius'], ['*', ['get', 'radius'], 2], 'require']],
     'kitchen sink tests; vars'
   ],
   ['#profile-card {width: == ::window[width] - 480;height: == ::window[height] - 480;center-x: == ::window[center-x];center-y: == ::window[center-y];border-radius: == [outer-radius];}',
-    ["rule", ["#", "profile-card"], [["==", ["get", ["&"], "width"], ["-", ["get", [":window"], "width"], 480]], ["==", ["get", ["&"], "height"], ["-", ["get", [":window"], "height"], 480]], ["==",
-      ["get", ["&"], "center-x"], ["get", [":window"], "center-x"]], ["==", ["get", ["&"], "center-y"], ["get", [":window"], "center-y"]], ["==", ["get", ["&"], "border-radius"], ["get", "outer-radius"]]]],
+    ['rule', ['#', 'profile-card'], [['==', ['get', ['&'], 'width'], ['-', ['get', [':window'], 'width'], 480]], ['==', ['get', ['&'], 'height'], ['-', ['get', [':window'], 'height'], 480]], ['==',
+      ['get', ['&'], 'center-x'], ['get', [':window'], 'center-x']], ['==', ['get', ['&'], 'center-y'], ['get', [':window'], 'center-y']], ['==', ['get', ['&'], 'border-radius'], ['get', 'outer-radius']]]],
     'kitchen sink tests; elements'
   ],
   ['#avatar {height: == 160 !require;width: == &[height];border-radius: == &[height] / 2;}',
-    ["rule", ["#", "avatar"], [["==", ["get", ["&"], "height"], 160, "require"], ["==", ["get", ["&"], "width"], ["get", ["&"], "height"]], ["==", ["get", ["&"], "border-radius"], ["/", ["get", ["&"], "height"], 2]]]],
+    ['rule', ['#', 'avatar'], [['==', ['get', ['&'], 'height'], 160, 'require'], ['==', ['get', ['&'], 'width'], ['get', ['&'], 'height']], ['==', ['get', ['&'], 'border-radius'], ['/', ['get', ['&'], 'height'], 2]]]],
     'kitchen sink tests; avatar'
   ],
   ['#name {height: == &[intrinsic-height] !require;width: == &[intrinsic-width] !require;}',
-    ["rule", ["#", "name"], [["==", ["get", ["&"], "height"], ["get", ["&"], "intrinsic-height", "require"]], ["==", ["get", ["&"], "width"], ["get", ["&"], "intrinsic-width", "require"]]]],
+    ['rule', ['#', 'name'], [['==', ['get', ['&'], 'height'], ['get', ['&'], 'intrinsic-height', 'require']], ['==', ['get', ['&'], 'width'], ['get', ['&'], 'intrinsic-width', 'require']]]],
     'kitchen sink test; name'
   ],
   ['#cover {border-radius: == [radius];}',
-    ["rule", ["#", "cover"], [["==", ["get", ["&"], "border-radius"], ["get", "radius"]]]],
+    ['rule', ['#', 'cover'], [['==', ['get', ['&'], 'border-radius'], ['get', 'radius']]]],
     'kitchen sink test; cover'
   ],
   ['button {width: == &[intrinsic-width] !require;height: == &[intrinsic-height] !require;padding: == [gap];padding-top: == [gap] / 2;padding-bottom: == [gap] / 2;border-radius: == [radius];}',
-    ["rule", ["tag", "button"], [["==", ["get", ["&"], "width"], ["get", ["&"], "intrinsic-width", "require"]], ["==", ["get", ["&"], "height"], ["get", ["&"], "intrinsic-height", "require"]], ["==", ["get", ["&"], "padding"], ["get", "gap"]], ["==", ["get", ["&"], "padding-top"], ["/", ["get", "gap"], 2]], ["==", ["get", ["&"], "padding-bottom"], ["/", ["get", "gap"], 2]], ["==", ["get", ["&"], "border-radius"], ["get", "radius"]]]],
+    ['rule', ['tag', 'button'], [['==', ['get', ['&'], 'width'], ['get', ['&'], 'intrinsic-width', 'require']], ['==', ['get', ['&'], 'height'], ['get', ['&'], 'intrinsic-height', 'require']], ['==', ['get', ['&'], 'padding'], ['get', 'gap']], ['==', ['get', ['&'], 'padding-top'], ['/', ['get', 'gap'], 2]], ['==', ['get', ['&'], 'padding-bottom'], ['/', ['get', 'gap'], 2]], ['==', ['get', ['&'], 'border-radius'], ['get', 'radius']]]],
     'kitchen sink test; button'
   ],
   ['@h |~-~(#name)~-~| in(#cover) gap([gap]*2) !strong;',
@@ -2244,11 +2243,11 @@ var colRowTests = [
   ['"frequently\\\x0D\x0Abar" c', 'c', 5, 1, 'escaped CRLF cause one line'],
   ['"frequently\\\x0D\\\x0Abar" c', 'c', 5, 2, 'escaped CR and LF cause two lines'],
 
-  ["'frequently\\\x0Dbar' c", 'c', 5, 1, 'CR newline sstring case'],
-  ["'frequently\\\x0Abar' c", 'c', 5, 1, 'LF newline sstring case'],
-  ["'frequently\\\x0Cbar' c", 'c', 5, 1, 'FF newline sstring case'],
-  ["'frequently\\\x0D\x0Abar' c", 'c', 5, 1, 'escaped CRLF cause one line'],
-  ["'frequently\\\x0D\\\x0Abar' c", 'c', 5, 2, 'escaped CR and LF cause two lines'],
+  ['\'frequently\\\x0Dbar\' c', 'c', 5, 1, 'CR newline sstring case'],
+  ['\'frequently\\\x0Abar\' c', 'c', 5, 1, 'LF newline sstring case'],
+  ['\'frequently\\\x0Cbar\' c', 'c', 5, 1, 'FF newline sstring case'],
+  ['\'frequently\\\x0D\x0Abar\' c', 'c', 5, 1, 'escaped CRLF cause one line'],
+  ['\'frequently\\\x0D\\\x0Abar\' c', 'c', 5, 2, 'escaped CR and LF cause two lines'],
 
   ['a/* \x0D */b', 'b', 3, 1, 'CR comment case'],
   ['a/* \x0A */b', 'b', 3, 1, 'LF comment case'],
@@ -2401,8 +2400,8 @@ var gracefulErrorTests = [
   ['[foo=] {}', ['PARSER_ERROR[E_EXPECTING_ATTR_STRING_OR_IDENT]'], 'missing rhs of css attr assign'],
   ['[foo= {}]', [['PARSER_ERROR[E_EXPECTING_ATTR_STRING_OR_IDENT]'], ['PARSER_ERROR[E_UNKNOWN_SELECTOR_PUNC]']]],
   ['[foo=a b] {}', ['PARSER_ERROR[E_EXPECTING_ATTR_END]'], 'unquoted space in css attr value'],
-  ['[foo="a"b] {}', ["PARSER_ERROR[E_EXPECTING_ATTR_END]"], 'nonstop token after css attr string value'],
-  ['[foo="a" b] {}', ["PARSER_ERROR[E_EXPECTING_ATTR_END]"], 'nonstop token after css attr string value with space'],
+  ['[foo="a"b] {}', ['PARSER_ERROR[E_EXPECTING_ATTR_END]'], 'nonstop token after css attr string value'],
+  ['[foo="a" b] {}', ['PARSER_ERROR[E_EXPECTING_ATTR_END]'], 'nonstop token after css attr string value with space'],
   ['[b=+-a]', ['GSS_ERROR[E_INVALID_TOKEN_IN_ACC]'], 'css attr without body'],
   ['[b=+-a] {}', ['PARSER_ERROR[E_EXPECTING_ATTR_STRING_OR_IDENT]'], 'css attr with body and double dashed ident, becomes negative `-a`'],
   /* invalid: (according to mdn: https://developer.mozilla.org/en-US/docs/Web/CSS/font-family )
@@ -2467,11 +2466,11 @@ var gracefulErrorTests = [
   ['\\\r\nfoo', ['LEXER_ERROR[E_CANNOT_ESCAPE_NEWLINE_HERE]'], 'well whatever bad escapes newlines boom'],
   ['\\\n\rfoo', ['LEXER_ERROR[E_CANNOT_ESCAPE_NEWLINE_HERE]'], 'well whatever bad escapes newlines boom'],
   ['- {}', ['PARSER_ERROR[E_UNKNOWN_SELECTOR_TOKEN_TYPE]'], 'not a valid IDENT on its own'],
-  ['"fo\nbar"', ["LEXER_ERROR[E_UNESCAPED_NEWLINE_IN_STRING]"], 'unescaped newline in string'],
-  ['"fo\rbar"', ["LEXER_ERROR[E_UNESCAPED_NEWLINE_IN_STRING]"], 'unescaped newline in string'],
-  ['"fo\fbar"', ["LEXER_ERROR[E_UNESCAPED_NEWLINE_IN_STRING]"], 'unescaped newline in string'],
-  ['"fo\r\nbar"', ["LEXER_ERROR[E_UNESCAPED_NEWLINE_IN_STRING]"], 'unescaped newline in string'],
-  ['"fo\n\rbar"', ["LEXER_ERROR[E_UNESCAPED_NEWLINE_IN_STRING]"], 'unescaped newline in string'],
+  ['"fo\nbar"', ['LEXER_ERROR[E_UNESCAPED_NEWLINE_IN_STRING]'], 'unescaped newline in string'],
+  ['"fo\rbar"', ['LEXER_ERROR[E_UNESCAPED_NEWLINE_IN_STRING]'], 'unescaped newline in string'],
+  ['"fo\fbar"', ['LEXER_ERROR[E_UNESCAPED_NEWLINE_IN_STRING]'], 'unescaped newline in string'],
+  ['"fo\r\nbar"', ['LEXER_ERROR[E_UNESCAPED_NEWLINE_IN_STRING]'], 'unescaped newline in string'],
+  ['"fo\n\rbar"', ['LEXER_ERROR[E_UNESCAPED_NEWLINE_IN_STRING]'], 'unescaped newline in string'],
   ['10.', ['LEXER_ERROR[E_NUMBER_WITH_DOT_MUST_HAVE_DECIMAL]'], 'NUMBER may not end with dot'],
   ['#', ['LEXER_ERROR[E_HASH_WITHOUT_IDENTIFIER]'], 'HASH must have identifier too'],
   ['5%20', ['GSS_ERROR[E_GSS_UNEXPECTED_TOKEN]'], 'NUMBER no space NUMBER'],
@@ -2489,7 +2488,7 @@ var gracefulErrorTests = [
 
   ['dance(< 1, >= 1) jump(== 2) fall(+ 3, * 3, - my-func(1), / my-var);',
     //[["dance",["<",1],[">=",1]],["jump",["==",2]],["fall",["+",3],["*",3],["-",["my-func",1]],["/",["get","my-var"]]]],
-    ["GSS_ERROR[E_UNEXPECTED_ATOM]"], // this syntax has been deprecated
+    ['GSS_ERROR[E_UNEXPECTED_ATOM]'], // this syntax has been deprecated
     'legacy test'
   ],
 
@@ -2500,17 +2499,17 @@ var gracefulErrorTests = [
   ['x + "foo" == 10;', [], 'virtuals must have an accessor'],
 
   ['a/* crap */b {}',
-    ["PARSER_ERROR[A_IDENT_WITHOUT_COMBINATOR]"],
+    ['PARSER_ERROR[A_IDENT_WITHOUT_COMBINATOR]'],
     'comment does not count as whitespace (doesnt even make sense)'
   ],
 
   ['abc { color: background: #abc }',
-    ["rule",["tag","abc"],[["PARSER_ERROR[E_COLON_INVALID_IN_DECL_VALUE]"]]],
+    ['rule', ['tag', 'abc'], [['PARSER_ERROR[E_COLON_INVALID_IN_DECL_VALUE]']]],
     'second colon is illegal'
   ],
   [
     wrap('background-image: background-image: radial-gradient(16px at 60px 50% , #000000 0%, #000000 14px, rgba(0, 0, 0, 0.3) 18px, rgba(0, 0, 0, 0) 19px);'),
-    ['rule',['tag','divv'],[['PARSER_ERROR[E_COLON_INVALID_IN_DECL_VALUE]']]],
+    ['rule', ['tag', 'divv'], [['PARSER_ERROR[E_COLON_INVALID_IN_DECL_VALUE]']]],
     'second colon is illegal'
   ],
 
@@ -2518,7 +2517,7 @@ var gracefulErrorTests = [
     'a { b { c:foo() == d } }',
     'a { b { c:foo() == d; }; }', // for peg
   ],
-    ['rule',['tag','a'],[['rule',['tag','b'],[['GSS_ERROR[E_GSS_UNEXPECTED_TOKEN]']]]]], // foo() is not a value...
+    ['rule', ['tag', 'a'], [['rule', ['tag', 'b'], [['GSS_ERROR[E_GSS_UNEXPECTED_TOKEN]']]]]], // foo() is not a value...
     'double nesting with gss rule inside and a red herring colon but still a rule, not declaration'
   ],
 ];
